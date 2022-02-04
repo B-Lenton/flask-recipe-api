@@ -172,7 +172,7 @@ def create_recipe(recipe):
         # insert recipe into recipes table
         cur.execute("INSERT INTO recipes (recipe_name, description, creator) VALUES (?, ?, ?)", (recipe['recipe_name'], recipe['description'], recipe['creator'],))
 
-        # TODO: insert ingredients into ingredients table
+        # Insert ingredients into ingredients table
         """
         # E.G:
         data = [
@@ -183,9 +183,72 @@ def create_recipe(recipe):
         stmt = "INSERT INTO employees (first_name, hire_date) VALUES (%s, %s)"
         cursor.executemany(stmt, data)
         """
-        stmt = "INSERT INTO ..."
-        data = []
-        cur.executemany()
+        new_ingredient_names = []
+        existing_ingredient_names = []
+        insert_ingredients = "INSERT INTO ingredients (ingredient_name) VALUES (%s)"
+
+        new_measurement_types = []
+        existing_measurement_types = []
+        insert_measurement_types = "INSERT INTO measurement_units (measurement_type) VALUES (%s)"
+
+        new_qty_amounts = []
+        existing_qty_amounts = []
+        insert_qty_amounts = "INSERT INTO measurement_qty (qty_amount) VALUES (%s)"
+
+        for index, ingredient in enumerate(recipe["ingredients"]):
+            """
+            Loop through each ingredient in the ingredients list.
+            Categorise based on if they already exist in the database.
+            """
+
+            categorise_values(
+                "SELECT * FROM ingredients WHERE ingredient_name = ?",
+                ingredient, 
+                new_ingredient_names, 
+                existing_ingredient_names
+            )
+
+            # with standard for loop: index = recipe["ingredients"].index(f"'{ingredient}'")
+            # get the corresponding measurement type for the current ingredient
+            measurement_type = recipe["measurement_units"][index]
+            categorise_values(
+                "SELECT * FROM measurement_units WHERE measurement_type = ?",
+                measurement_type, 
+                new_measurement_types, 
+                existing_measurement_types
+            )
+
+            # get the corresponding measurement quantity for the current ingredient
+            measurement_qty = recipe["measurement_qty"][index]
+            categorise_values(
+                "SELECT * FROM measurement_qty WHERE measurement_qty = ?",
+                measurement_qty, 
+                new_qty_amounts, 
+                existing_qty_amounts
+            )
+
+
+        if new_ingredient_names:
+            print(new_ingredient_names)
+            cur.executemany(insert_ingredients, new_ingredient_names)
+            # TODO: Get database ID of these items to add to the recipe_ingredients join table
+        
+        # TODO: if existingList: get DB id of existing element to insert into recipe_ingredients join table with correct corresponding IDs 
+
+        if new_measurement_types:
+            print(new_measurement_types)
+            cur.executemany(insert_measurement_types, new_measurement_types)
+            # TODO: Get database ID of these items to add to the recipe_ingredients join table
+        
+        # TODO: if existingList: get DB id of existing element to insert into recipe_ingredients join table with correct corresponding IDs 
+
+        if new_qty_amounts:
+            print(new_qty_amounts)
+            cur.executemany(insert_qty_amounts, new_qty_amounts)
+            # TODO: Get database ID of these items to add to the recipe_ingredients join table
+        
+        # TODO: if existingList: get DB id of existing element to insert into recipe_ingredients join table with correct corresponding IDs 
+        
         conn.commit()
         created_recipe = get_recipe_by_id(cur.lastrowid)
     except:
@@ -285,3 +348,19 @@ def delete_recipe(recipe, recipe_id):
         conn.close()
 
     return message
+
+
+def categorise_values(sql_stmt, query_data, new_list, existing_list):
+    conn = connect_to_db()
+    cur = conn.cursor()
+    count = cur.execute(sql_stmt, (query_data,))
+    count = str(list(count)[0])[1:2]
+    if count == "0":
+        new_list.push(f"('{query_data}'),")
+    elif count == "1":
+        existing_list.push(query_data)
+    else:
+        return "An unexpected error occurred."
+
+    return new_list, existing_list
+
