@@ -184,15 +184,15 @@ def create_recipe(recipe):
         cursor.executemany(stmt, data)
         """
         new_ingredient_names = []
-        existing_ingredient_names = []
+        existing_ingredient_names = {}
         insert_ingredients = "INSERT INTO ingredients (ingredient_name) VALUES (%s)"
 
         new_measurement_types = []
-        existing_measurement_types = []
+        existing_measurement_types = {}
         insert_measurement_types = "INSERT INTO measurement_units (measurement_type) VALUES (%s)"
 
         new_qty_amounts = []
-        existing_qty_amounts = []
+        existing_qty_amounts = {}
         insert_qty_amounts = "INSERT INTO measurement_qty (qty_amount) VALUES (%s)"
 
         for index, ingredient in enumerate(recipe["ingredients"]):
@@ -205,7 +205,10 @@ def create_recipe(recipe):
                 "SELECT * FROM ingredients WHERE ingredient_name = ?",
                 ingredient, 
                 new_ingredient_names, 
-                existing_ingredient_names
+                existing_ingredient_names,
+                "ingredient_id",
+                "ingredients",
+                "ingrdedient_name"
             )
 
             # with standard for loop: index = recipe["ingredients"].index(f"'{ingredient}'")
@@ -215,7 +218,10 @@ def create_recipe(recipe):
                 "SELECT * FROM measurement_units WHERE measurement_type = ?",
                 measurement_type, 
                 new_measurement_types, 
-                existing_measurement_types
+                existing_measurement_types,
+                "measurement_id",
+                "measurement_units",
+                "measurement_type"
             )
 
             # get the corresponding measurement quantity for the current ingredient
@@ -224,16 +230,22 @@ def create_recipe(recipe):
                 "SELECT * FROM measurement_qty WHERE measurement_qty = ?",
                 measurement_qty, 
                 new_qty_amounts, 
-                existing_qty_amounts
+                existing_qty_amounts,
+                "qty_id",
+                "measurement_qty",
+                "measurement_amount"
             )
-
 
         if new_ingredient_names:
             print(new_ingredient_names)
             cur.executemany(insert_ingredients, new_ingredient_names)
             # TODO: Get database ID of these items to add to the recipe_ingredients join table
-        
-        # TODO: if existingList: get DB id of existing element to insert into recipe_ingredients join table with correct corresponding IDs 
+            # rows_inserted = cur.rowcount
+
+        # TODO: if existingList: get DB id of existing element to insert into recipe_ingredients join table with correct corresponding IDs
+        # if existing_ingredient_names:
+        #     print(existing_ingredient_names)
+
 
         if new_measurement_types:
             print(new_measurement_types)
@@ -249,6 +261,18 @@ def create_recipe(recipe):
         
         # TODO: if existingList: get DB id of existing element to insert into recipe_ingredients join table with correct corresponding IDs 
         
+
+        # TODO: IGNORE above todos - don't need existing objects!
+        # Once new values are in the DBs (recipes, ingredients, measurement_units, measurement_qty):
+        """
+        INSERT INTO recipe_ingredients 
+            VALUES (
+            current_recipe_id,
+            SELECT measurement_id FROM measurement_units WHERE measurement_type = current_recipe_measurement_type,
+            SELECT qty_id FROM measurement_qty WHERE qty_amount = current_recipe_qty_amount,
+            SELECT ingredient_id FROM ingredients WHERE ingredient_name = current_recipe_ingredient_name
+            )
+        """
         conn.commit()
         created_recipe = get_recipe_by_id(cur.lastrowid)
     except:
@@ -350,7 +374,7 @@ def delete_recipe(recipe, recipe_id):
     return message
 
 
-def categorise_values(sql_stmt, query_data, new_list, existing_list):
+def categorise_values(sql_stmt, query_data, new_list, existing_items, id_type, table_name, column_name):
     conn = connect_to_db()
     cur = conn.cursor()
     count = cur.execute(sql_stmt, (query_data,))
@@ -358,9 +382,13 @@ def categorise_values(sql_stmt, query_data, new_list, existing_list):
     if count == "0":
         new_list.push(f"('{query_data}'),")
     elif count == "1":
-        existing_list.push(query_data)
+        # existing_list.push(query_data)
+        # find DB id of the existing item (3 new params):
+        db_id = cur.execute("SELECT ? from ? WHERE ? = ?", (id_type, table_name, column_name, query_data,))
+        db_id = str(list(db_id)).strip("(),")
+        existing_items[db_id] = query_data
     else:
         return "An unexpected error occurred."
 
-    return new_list, existing_list
+    return new_list, existing_items
 
