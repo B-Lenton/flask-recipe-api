@@ -165,6 +165,17 @@ def create_recipe_ingredients_table():
 
 
 def create_recipe(recipe):
+    """
+    Expected data (object) for creating recipes:
+    {
+        "recipe_name": str(user input),
+        "description": str(user input),
+        "creator": int(current user),
+        "ingredients": [ str(user input) ],
+        "measurement_units": [ str(user input) ],
+        "measurement_qty": [ str(user input) ]
+    }
+    """
     created_recipe = {}
     try:
         conn = connect_to_db()
@@ -172,28 +183,13 @@ def create_recipe(recipe):
         # insert recipe into recipes table
         cur.execute("INSERT INTO recipes (recipe_name, description, creator) VALUES (?, ?, ?)", (recipe['recipe_name'], recipe['description'], recipe['creator'],))
 
-        # Insert ingredients into ingredients table
-        """
-        # E.G:
-        data = [
-        ('Jane', date(2005, 2, 12)),
-        ('Joe', date(2006, 5, 23)),
-        ('John', date(2010, 10, 3)),
-        ]
-        stmt = "INSERT INTO employees (first_name, hire_date) VALUES (%s, %s)"
-        cursor.executemany(stmt, data)
-        """
+        # Commit changes so far to get most recent inserted row's id
+        conn.commit()
+        recipe_id = cur.lastrowid
+
         new_ingredient_names = []
-        existing_ingredient_names = {}
-        insert_ingredients = "INSERT INTO ingredients (ingredient_name) VALUES (%s)"
-
         new_measurement_types = []
-        existing_measurement_types = {}
-        insert_measurement_types = "INSERT INTO measurement_units (measurement_type) VALUES (%s)"
-
         new_qty_amounts = []
-        existing_qty_amounts = {}
-        insert_qty_amounts = "INSERT INTO measurement_qty (qty_amount) VALUES (%s)"
 
         for index, ingredient in enumerate(recipe["ingredients"]):
             """
@@ -204,77 +200,53 @@ def create_recipe(recipe):
             categorise_values(
                 "SELECT * FROM ingredients WHERE ingredient_name = ?",
                 ingredient, 
-                new_ingredient_names, 
-                existing_ingredient_names,
-                "ingredient_id",
-                "ingredients",
-                "ingrdedient_name"
+                new_ingredient_names 
             )
 
-            # with standard for loop: index = recipe["ingredients"].index(f"'{ingredient}'")
             # get the corresponding measurement type for the current ingredient
             measurement_type = recipe["measurement_units"][index]
             categorise_values(
                 "SELECT * FROM measurement_units WHERE measurement_type = ?",
                 measurement_type, 
-                new_measurement_types, 
-                existing_measurement_types,
-                "measurement_id",
-                "measurement_units",
-                "measurement_type"
+                new_measurement_types
             )
 
             # get the corresponding measurement quantity for the current ingredient
             measurement_qty = recipe["measurement_qty"][index]
             categorise_values(
-                "SELECT * FROM measurement_qty WHERE measurement_qty = ?",
+                "SELECT * FROM measurement_qty WHERE qty_amount = ?",
                 measurement_qty, 
-                new_qty_amounts, 
-                existing_qty_amounts,
-                "qty_id",
-                "measurement_qty",
-                "measurement_amount"
+                new_qty_amounts 
             )
 
         if new_ingredient_names:
-            print(new_ingredient_names)
-            cur.executemany(insert_ingredients, new_ingredient_names)
-            # TODO: Get database ID of these items to add to the recipe_ingredients join table
-            # rows_inserted = cur.rowcount
-
-        # TODO: if existingList: get DB id of existing element to insert into recipe_ingredients join table with correct corresponding IDs
-        # if existing_ingredient_names:
-        #     print(existing_ingredient_names)
-
+            print("new ingredients", new_ingredient_names)
+            for ingredient in new_ingredient_names:
+                cur.execute("INSERT INTO ingredients (ingredient_name) VALUES (?)", (ingredient,))
 
         if new_measurement_types:
-            print(new_measurement_types)
-            cur.executemany(insert_measurement_types, new_measurement_types)
-            # TODO: Get database ID of these items to add to the recipe_ingredients join table
-        
-        # TODO: if existingList: get DB id of existing element to insert into recipe_ingredients join table with correct corresponding IDs 
+            print("new measurement types", new_measurement_types)
+            for measurement_type in new_measurement_types:
+                cur.execute("INSERT INTO measurement_units (measurement_type) VALUES (?)", (measurement_type,))
 
         if new_qty_amounts:
-            print(new_qty_amounts)
-            cur.executemany(insert_qty_amounts, new_qty_amounts)
-            # TODO: Get database ID of these items to add to the recipe_ingredients join table
-        
-        # TODO: if existingList: get DB id of existing element to insert into recipe_ingredients join table with correct corresponding IDs 
-        
+            print("new quantities", new_qty_amounts)
+            for qty in new_qty_amounts:
+                cur.execute("INSERT INTO measurement_qty (qty_amount) VALUES (?)", (qty,))
 
-        # TODO: IGNORE above todos - don't need existing objects!
-        # Once new values are in the DBs (recipes, ingredients, measurement_units, measurement_qty):
         """
-        INSERT INTO recipe_ingredients 
-            VALUES (
-            current_recipe_id,
-            SELECT measurement_id FROM measurement_units WHERE measurement_type = current_recipe_measurement_type,
-            SELECT qty_id FROM measurement_qty WHERE qty_amount = current_recipe_qty_amount,
-            SELECT ingredient_id FROM ingredients WHERE ingredient_name = current_recipe_ingredient_name
+        Loop through each ingredient (with index) to insert corresponding ingredients, measurement types, quantities, into the join table along with the correct recipe id:
+        """
+        for index, ingredient in enumerate(recipe["ingredients"]):
+            cur.execute(
+                "INSERT INTO recipe_ingredients VALUES ((?), (SELECT measurement_id FROM measurement_units WHERE measurement_type = ?), (SELECT qty_id FROM measurement_qty WHERE qty_amount = ?), (SELECT ingredient_id FROM ingredients WHERE ingredient_name = ?))", 
+                (recipe_id, recipe["measurement_units"][index], recipe["measurement_qty"][index], ingredient,)
             )
-        """
         conn.commit()
-        created_recipe = get_recipe_by_id(cur.lastrowid)
+
+        # TODO: Refactor the get_recipe_by_id function to return EVERYTHING from the different tables (use the join table as a basis) 
+        created_recipe = get_recipe_by_id(recipe_id)
+        print("Created recipe:", created_recipe)
     except:
         conn.rollback()
 
@@ -282,13 +254,6 @@ def create_recipe(recipe):
         conn.close()
 
     return created_recipe
-
-# works:
-# create_recipe({
-#     "recipe_name": "Vegan Pizza",
-#     "description": "You've never tasted anything like it",
-#     "creator": 1
-# })
 
 
 def get_recipes():
@@ -315,6 +280,7 @@ def get_recipes():
 
 
 def get_recipe_by_id(recipe_id):
+    # TODO: Refactor!! (See other TODO - just need to add key:val pairs to the dictionary)
     recipe = {}
     try:
         conn = connect_to_db()
@@ -356,13 +322,15 @@ def delete_recipe(recipe, recipe_id):
     message = {}
     try:
         conn = connect_to_db()
+        cur = conn.cursor()
         # check that the recipe exists
-        count = conn.execute("SELECT COUNT (*) FROM recipes WHERE recipe_id = ? AND creator = ?", (recipe_id, recipe['creator'],))
-        count = str(list(count)[0])[1:2]
-        if count == "0":
+        cur.execute("SELECT * FROM recipes WHERE recipe_id = ? AND creator = ?", (recipe_id, recipe['creator'],))
+        print(cur.lastrowid)
+
+        if cur.fetchone is None:
             message["status"] = "Recipe not found"
         else:
-            conn.execute("DELETE from recipes WHERE recipe_id = ? AND creator = ?", (recipe_id, recipe['creator'],))
+            cur.execute("DELETE from recipes WHERE recipe_id = ? AND creator = ?", (recipe_id, recipe['creator'],))
             conn.commit()
             message["status"] = "Recipe deleted successfully"
     except:
@@ -371,24 +339,18 @@ def delete_recipe(recipe, recipe_id):
     finally:
         conn.close()
 
-    return message
+        return message
 
 
-def categorise_values(sql_stmt, query_data, new_list, existing_items, id_type, table_name, column_name):
+def categorise_values(sql_stmt, query_data, new_list):
+    # TODO: Wrap in try / except block
     conn = connect_to_db()
     cur = conn.cursor()
-    count = cur.execute(sql_stmt, (query_data,))
-    count = str(list(count)[0])[1:2]
-    if count == "0":
-        new_list.push(f"('{query_data}'),")
-    elif count == "1":
-        # existing_list.push(query_data)
-        # find DB id of the existing item (3 new params):
-        db_id = cur.execute("SELECT ? from ? WHERE ? = ?", (id_type, table_name, column_name, query_data,))
-        db_id = str(list(db_id)).strip("(),")
-        existing_items[db_id] = query_data
-    else:
-        return "An unexpected error occurred."
+    cur.execute(sql_stmt, (query_data,))
+    exists = cur.fetchone()
+    
+    if not exists:
+        new_list.append(query_data)
+        print(new_list)
 
-    return new_list, existing_items
-
+    return new_list

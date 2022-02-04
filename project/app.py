@@ -27,6 +27,7 @@ def api_update_recipe():
 @app.route('/api/recipes/delete/<recipe_id>',  methods = ['DELETE'])
 def api_delete_recipe(recipe_id):
     recipe = request.get_json()
+    print(recipe)
     return jsonify(delete_recipe(recipe, recipe_id))
 
 if __name__ == "__main__":
