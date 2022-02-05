@@ -1,5 +1,7 @@
 import sqlite3
 
+# TODO: Delete data from all tables EXCEPT measurement_units (closed vocab)!
+# TODO: Sort out delete function
 
 def connect_to_db():
     """
@@ -156,31 +158,52 @@ def create_recipe_ingredients_table():
         conn.close()
 
 
-def create_methods_table():
+def populate_measurement_units_table():
     """
-    Create methods table.
+    Populate table with data.
     """
     try:
         conn = connect_to_db()
-        conn.executescript("""
-            CREATE TABLE methods (
-                recipe_id INTEGER NOT NULL,
-                step_no INTEGER NOT NULL,
-                step TEXT NOT NULL,
-                FOREIGN KEY(recipe_id)
-                    REFERENCES recipes(recipe_id)
-                    ON DELETE CASCADE
-            );
-            CREATE INDEX methods_index ON methods(recipe_id);
-            CREATE INDEX step_order_index ON methods(step_no);
+        cur = conn.cursor()
+        cur.execute("""
+            INSERT INTO measurement_units (measurement_type) VALUES
+            ("teaspoon (tsp)"),
+            ("tablespoon (tbsp)"),
+            ("fluid ounce (fl oz)"),
+            ("gill"),
+            ("cup"),
+            ("pint (568ml)"),
+            ("quart"),
+            ("gallon"),
+            ("millilitre (ml)"),
+            ("litre (l)"),
+            ("decilitre (dl)"),
+            ("pound (lb)"),
+            ("ounce (oz)"),
+            ("milligram (mg)"),
+            ("gram (g)"),
+            ("kilogram (kg)"),
+            ("centimetre (cm)"),
+            ("millimetre (mm)"),
+            ("metre (m)"),
+            ('inch (")'),
+            ("pinch"),
+            ("slice"),
+            ("punnet"),
+            ("tin"),
+            ("jar"),
+            ("bottle"),
+            ("can"),
+            ("bunch"),
+            ("box")
+            ;
         """)
         conn.commit()
-        print("methods table created successfully")
+        print("measurement units inserted successfully")
     except:
-        print("methods table creation failed - Maybe table")
+        print("measurement units insertion failed - Maybe table")
     finally:
         conn.close()
-
 
 # create_users_table()
 # create_recipes_table()
@@ -189,14 +212,9 @@ def create_methods_table():
 # create_measurement_qty_table()
 # create_recipe_ingredients_table()
 # create_methods_table()
+# populate_measurement_units_table()
 
-# TODO: measurement types = controlled vocab - have a stored set of them for users to choose from rather than querying / adding each time
-# cur.execute(
-#     "INSERT INTO measurement_units (measurement_type) VALUES (?)", 
-#     (measurement_type,)
-# )
-
-
+# working
 def create_recipe(recipe):
     """
     Expected data (object) for creating recipes:
@@ -228,8 +246,6 @@ def create_recipe(recipe):
             "INSERT INTO recipes (recipe_name, description, creator) VALUES (?, ?, ?)", 
             (recipe['recipe_name'], recipe['description'], recipe['creator'],)
         )
-        # Commit changes so far to get most recent inserted recipe's row id
-        # conn.commit() ???
         recipe_id = inserted_recipe.lastrowid
 
         # Loop through each ingredient dict, extracting name and quantity for use in insert statements:
@@ -259,12 +275,10 @@ def create_recipe(recipe):
                 (recipe_id, step["step_no"], step["step"],)
             )
         conn.commit()
-
+        
         created_recipe = get_recipe_by_id(recipe_id)
-        print("Created recipe:", created_recipe)
     except:
         conn.rollback()
-
     finally:
         conn.close()
 
@@ -272,6 +286,9 @@ def create_recipe(recipe):
 
 
 def get_recipes():
+    """
+    Returns limited data on all existing recipes.
+    """
     recipes = []
     try:
         conn = connect_to_db()
@@ -294,7 +311,11 @@ def get_recipes():
     return recipes
 
 
+# working!
 def get_recipe_by_id(recipe_id):
+    """
+    Returns all information about an existing recipe by its ID.
+    """
     try:
         conn = connect_to_db()
         conn.row_factory = sqlite3.Row
@@ -304,8 +325,7 @@ def get_recipe_by_id(recipe_id):
             (recipe_id,)
         )
         recipe = cur.fetchone()
-
-        ingredients = {}
+        
         cur.execute(
             """
             SELECT 
@@ -324,20 +344,33 @@ def get_recipe_by_id(recipe_id):
             (recipe_id,)
         )
 
-        # TODO: currently returns list of <sqlite3.Row objects>
         ingredients = []
         for row in cur.fetchall():
             ingredients.append(dict(zip(["name", "unit", "quantity"], row)))
-        # [{'name': 'eggs', 'unit': 'none', 'quantity': 'two'}, {'name': 'milk', 'unit': 'cups', 'quantity': '1.5'}]
-        print(ingredients)
+
+        cur.execute(
+            "SELECT step_no, step FROM methods WHERE recipe_id = ? ORDER BY step_no ASC", 
+            (recipe_id,)
+        )
+
+        method = []
+        for row in cur.fetchall():
+            print(row)
+            method.append(dict(zip(["step_no", "step"], row)))
+
     except:
         recipe = {}
-# TODO: TypeError: 'list' object is not a mapping
-# Need to make it: { basic recipe info, ingredients: [{}], methods:[{}]}
-    return {**recipe, **ingredients}
+        ingredients = []
+        method = []
+
+    return { **recipe, "ingredients": ingredients, "method": method }
 
 
 def update_recipe(recipe):
+    """
+    TODO: Should be able to update ALL data about a recipe.
+    See update example from Just IT.
+    """
     updated_recipe = {}
     try:
         conn = connect_to_db()
@@ -356,10 +389,15 @@ def update_recipe(recipe):
 
 
 def delete_recipe(recipe, recipe_id):
+    """
+    TODO: Check what happens and refactor accordingly
+    - On delete cascade not working? see line 400...
+    """
     message = {}
     try:
         conn = connect_to_db()
         cur = conn.cursor()
+        cur.execute("PRAGMA foreign_keys=ON")
         # check that the recipe exists
         cur.execute("SELECT * FROM recipes WHERE recipe_id = ? AND creator = ?", (recipe_id, recipe['creator'],))
         print(cur.lastrowid)
@@ -377,17 +415,3 @@ def delete_recipe(recipe, recipe_id):
         conn.close()
 
         return message
-
-
-def store_new_values(sql_stmt, query_data, new_list):
-    # TODO: Wrap in try / except block
-    conn = connect_to_db()
-    cur = conn.cursor()
-    cur.execute(sql_stmt, (query_data,))
-    exists = cur.fetchone()
-    
-    if not exists:
-        new_list.append(query_data)
-        print(new_list)
-
-    return new_list
