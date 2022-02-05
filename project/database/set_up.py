@@ -156,12 +156,45 @@ def create_recipe_ingredients_table():
         conn.close()
 
 
+def create_methods_table():
+    """
+    Create methods table.
+    """
+    try:
+        conn = connect_to_db()
+        conn.executescript("""
+            CREATE TABLE methods (
+                recipe_id INTEGER NOT NULL,
+                step_no INTEGER NOT NULL,
+                step TEXT NOT NULL,
+                FOREIGN KEY(recipe_id)
+                    REFERENCES recipes(recipe_id)
+                    ON DELETE CASCADE
+            );
+            CREATE INDEX methods_index ON methods(recipe_id);
+            CREATE INDEX step_order_index ON methods(step_no);
+        """)
+        conn.commit()
+        print("methods table created successfully")
+    except:
+        print("methods table creation failed - Maybe table")
+    finally:
+        conn.close()
+
+
 # create_users_table()
 # create_recipes_table()
 # create_ingredients_table()
 # create_measurement_units_table()
 # create_measurement_qty_table()
 # create_recipe_ingredients_table()
+# create_methods_table()
+
+# TODO: measurement types = controlled vocab - have a stored set of them for users to choose from rather than querying / adding each time
+# cur.execute(
+#     "INSERT INTO measurement_units (measurement_type) VALUES (?)", 
+#     (measurement_type,)
+# )
 
 
 def create_recipe(recipe):
@@ -171,9 +204,19 @@ def create_recipe(recipe):
         "recipe_name": str(user input),
         "description": str(user input),
         "creator": int(current user),
-        "ingredients": [ str(user input) ],
-        "measurement_units": [ str(user input) ],
-        "measurement_qty": [ str(user input) ]
+        "ingredients": [
+            {
+                "name": "ingredient_name",
+                "unit": "measurement_units",
+                "quantity": "measurement_qty"
+            }, {...}
+        ],
+        "method": [
+            {
+                "step_no": int(auto generated),
+                "step": str(user input)
+            }, {...}
+        ]
     }
     """
     created_recipe = {}
@@ -181,70 +224,42 @@ def create_recipe(recipe):
         conn = connect_to_db()
         cur = conn.cursor()
         # insert recipe into recipes table
-        cur.execute("INSERT INTO recipes (recipe_name, description, creator) VALUES (?, ?, ?)", (recipe['recipe_name'], recipe['description'], recipe['creator'],))
+        inserted_recipe = cur.execute(
+            "INSERT INTO recipes (recipe_name, description, creator) VALUES (?, ?, ?)", 
+            (recipe['recipe_name'], recipe['description'], recipe['creator'],)
+        )
+        # Commit changes so far to get most recent inserted recipe's row id
+        # conn.commit() ???
+        recipe_id = inserted_recipe.lastrowid
 
-        # Commit changes so far to get most recent inserted row's id
-        conn.commit()
-        recipe_id = cur.lastrowid
-
-        new_ingredient_names = []
-        new_measurement_types = []
-        new_qty_amounts = []
-
-        for index, ingredient in enumerate(recipe["ingredients"]):
-            """
-            Loop through each ingredient in the ingredients list.
-            Categorise based on if they already exist in the database.
-            """
-
-            categorise_values(
-                "SELECT * FROM ingredients WHERE ingredient_name = ?",
-                ingredient, 
-                new_ingredient_names 
+        # Loop through each ingredient dict, extracting name and quantity for use in insert statements:
+        for ingredient in recipe["ingredients"]:
+            cur.execute(
+                "INSERT OR IGNORE INTO ingredients (ingredient_name) VALUES (?)", 
+                (ingredient["name"],)
             )
-
-            # get the corresponding measurement type for the current ingredient
-            measurement_type = recipe["measurement_units"][index]
-            categorise_values(
-                "SELECT * FROM measurement_units WHERE measurement_type = ?",
-                measurement_type, 
-                new_measurement_types
+            cur.execute(
+                "INSERT OR IGNORE INTO measurement_qty (qty_amount) VALUES (?)", 
+                (ingredient["quantity"],)
             )
-
-            # get the corresponding measurement quantity for the current ingredient
-            measurement_qty = recipe["measurement_qty"][index]
-            categorise_values(
-                "SELECT * FROM measurement_qty WHERE qty_amount = ?",
-                measurement_qty, 
-                new_qty_amounts 
-            )
-
-        if new_ingredient_names:
-            print("new ingredients", new_ingredient_names)
-            for ingredient in new_ingredient_names:
-                cur.execute("INSERT INTO ingredients (ingredient_name) VALUES (?)", (ingredient,))
-
-        if new_measurement_types:
-            print("new measurement types", new_measurement_types)
-            for measurement_type in new_measurement_types:
-                cur.execute("INSERT INTO measurement_units (measurement_type) VALUES (?)", (measurement_type,))
-
-        if new_qty_amounts:
-            print("new quantities", new_qty_amounts)
-            for qty in new_qty_amounts:
-                cur.execute("INSERT INTO measurement_qty (qty_amount) VALUES (?)", (qty,))
-
-        """
-        Loop through each ingredient (with index) to insert corresponding ingredients, measurement types, quantities, into the join table along with the correct recipe id:
-        """
-        for index, ingredient in enumerate(recipe["ingredients"]):
+            # conn.commit() ???
             cur.execute(
                 "INSERT INTO recipe_ingredients VALUES ((?), (SELECT measurement_id FROM measurement_units WHERE measurement_type = ?), (SELECT qty_id FROM measurement_qty WHERE qty_amount = ?), (SELECT ingredient_id FROM ingredients WHERE ingredient_name = ?))", 
-                (recipe_id, recipe["measurement_units"][index], recipe["measurement_qty"][index], ingredient,)
+                (
+                    recipe_id, 
+                    ingredient["unit"], 
+                    ingredient["quantity"], 
+                    ingredient["name"],
+                )
+            )
+        # loop through each step dict in the method and insert into method DB:
+        for step in recipe["method"]:
+            cur.execute(
+                "INSERT INTO methods VALUES (?, ?, ?)",
+                (recipe_id, step["step_no"], step["step"],)
             )
         conn.commit()
 
-        # TODO: Refactor the get_recipe_by_id function to return EVERYTHING from the different tables (use the join table as a basis) 
         created_recipe = get_recipe_by_id(recipe_id)
         print("Created recipe:", created_recipe)
     except:
@@ -253,7 +268,7 @@ def create_recipe(recipe):
     finally:
         conn.close()
 
-    return created_recipe
+    return created_recipe, 201
 
 
 def get_recipes():
@@ -280,24 +295,46 @@ def get_recipes():
 
 
 def get_recipe_by_id(recipe_id):
-    # TODO: Refactor!! (See other TODO - just need to add key:val pairs to the dictionary)
-    recipe = {}
     try:
         conn = connect_to_db()
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        cur.execute("SELECT * FROM recipes WHERE recipe_id = ?", (recipe_id,))
-        row = cur.fetchone()
+        cur.execute(
+            "SELECT * FROM recipes WHERE recipe_id = ?", 
+            (recipe_id,)
+        )
+        recipe = cur.fetchone()
 
-        # convert row object to dictionary
-        recipe["recipe_id"] = row["recipe_id"]
-        recipe["recipe_name"] = row["recipe_name"]
-        recipe["description"] = row["description"]
-        recipe["creator"] = row["creator"]
+        ingredients = {}
+        cur.execute(
+            """
+            SELECT 
+            ingredients.ingredient_name AS name, 
+            measurement_units.measurement_type AS unit,
+            measurement_qty.qty_amount AS quantity
+            FROM recipe_ingredients
+            INNER JOIN 
+            ingredients ON ingredients.ingredient_id = recipe_ingredients.ingredient_id 
+            INNER JOIN
+            measurement_units ON measurement_units.measurement_id = recipe_ingredients.measurement_id
+            INNER JOIN
+            measurement_qty ON measurement_qty.qty_id = recipe_ingredients.measurement_qty_id
+            WHERE recipe_ingredients.recipe_id = ?
+            """, 
+            (recipe_id,)
+        )
+
+        # TODO: currently returns list of <sqlite3.Row objects>
+        ingredients = []
+        for row in cur.fetchall():
+            ingredients.append(dict(zip(["name", "unit", "quantity"], row)))
+        # [{'name': 'eggs', 'unit': 'none', 'quantity': 'two'}, {'name': 'milk', 'unit': 'cups', 'quantity': '1.5'}]
+        print(ingredients)
     except:
         recipe = {}
-
-    return recipe
+# TODO: TypeError: 'list' object is not a mapping
+# Need to make it: { basic recipe info, ingredients: [{}], methods:[{}]}
+    return {**recipe, **ingredients}
 
 
 def update_recipe(recipe):
@@ -342,7 +379,7 @@ def delete_recipe(recipe, recipe_id):
         return message
 
 
-def categorise_values(sql_stmt, query_data, new_list):
+def store_new_values(sql_stmt, query_data, new_list):
     # TODO: Wrap in try / except block
     conn = connect_to_db()
     cur = conn.cursor()
