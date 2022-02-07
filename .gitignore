@@ -1,2 +1,3 @@
 recipe-app
 __pycache__
+.env
