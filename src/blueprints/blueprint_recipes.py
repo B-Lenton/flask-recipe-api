@@ -173,6 +173,7 @@ def update_recipe(recipe, recipe_id):
         conn = connect_to_db()
         cur = conn.cursor()
         cur.execute("""
+        UPDATE recipes SET recipe_name = ?, description = ? WHERE recipe_id = ? AND creator = ?
         """, 
         (recipe["recipe_name"], 
         recipe["description"], 
@@ -224,14 +225,18 @@ def search_recipes(search_value):
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
     # TODO: search not working (rebuild DB?) - may need to allow a rowid in the FTS?
+    recipes = []
+    # works: SELECT * FROM recipes WHERE recipe_name = ?
     cur.execute("""
-    SELECT highlight(recipes, 1, '<b>', '<b>'), highlight(recipes, 2, '<b>', '<b>') 
-    FROM recipes WHERE recipe_id IN 
-    (SELECT ROWID FROM recipes_fts WHERE recipes_fts MATCH ? ORDER BY rank)
+    SELECT * FROM recipes WHERE recipe_id IN (SELECT ROWID FROM recipes_fts WHERE recipe_name MATCH ? OR description MATCH ? ORDER BY rank)
     """,
-    (search_value + "*",)
+    (search_value + "*", search_value + "*",)
     )
-    recipes = cur.fetchall()
+    print(search_value)
+    for recipe in cur.fetchall():
+            print(recipe)
+            recipes.append(dict(zip(["recipe_id", "recipe_name", "description", "creator"], recipe)))
+    print(recipes)
     # except:
     #     recipes = {}
     # finally:

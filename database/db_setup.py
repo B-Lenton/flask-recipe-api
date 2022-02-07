@@ -74,7 +74,6 @@ def create_recipes_fts():
                 description, 
                 creator UNINDEXED, 
                 content=recipes, 
-                content_rowid=recipe_id, 
                 tokenize = "porter unicode61 tokenchars '-'"
             );
         ''')
@@ -227,13 +226,13 @@ def create_methods_table():
                 step TEXT NOT NULL,
                 FOREIGN KEY(recipe_id)
                     REFERENCES recipes(recipe_id)
-                    ON DELETE CASCADE,
+                    ON DELETE CASCADE
             );
         ''')
         conn.commit()
-        print("Recipes table created successfully")
+        print("Methods table created successfully")
     except:
-        print("Recipes table creation failed - Maybe table")
+        print("Methods table creation failed - Maybe table")
     finally:
         conn.close()
 
@@ -288,12 +287,12 @@ def populate_measurement_units_table():
 
 def index_tables():
     """
-    Populate table with data.
+    Index the data for faster searching.
     """
     try:
         conn = connect_to_db()
         cur = conn.cursor()
-        cur.execute("""
+        cur.executescript("""
             CREATE INDEX creator_idx
             ON recipes(creator);
             CREATE INDEX measurements_idx
@@ -304,23 +303,25 @@ def index_tables():
             ON ingredients(ingredient_id, ingredient_name);
             CREATE INDEX recipe_ings_idx
             ON recipe_ingredients(recipe_id, measurement_id, measurement_qty_id, ingredient_id);
+            CREATE INDEX methods_idx
+            ON methods(recipe_id, step_no, step);
         """)
         conn.commit()
-        print("measurement units inserted successfully")
+        print("Index successful")
     except:
-        print("measurement units insertion failed - Maybe table")
+        print("Index failed - Maybe table")
     finally:
         conn.close()
 
 
-create_users_table()
-create_recipes_table()
-create_ingredients_table()
-create_measurement_units_table()
-create_measurement_qty_table()
-create_recipe_ingredients_table()
-create_methods_table()
-populate_measurement_units_table()
-index_tables()
-create_recipes_fts()
-create_fts_triggers()
+# create_users_table()
+# create_recipes_table()
+# create_ingredients_table()
+# create_measurement_units_table()
+# create_measurement_qty_table()
+# create_recipe_ingredients_table()
+# create_methods_table()
+# populate_measurement_units_table()
+# index_tables()
+# create_recipes_fts()
+# create_fts_triggers()
