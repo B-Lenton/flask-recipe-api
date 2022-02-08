@@ -12,7 +12,7 @@ def connect_to_db():
     return conn
 
 
-def create_recipe(recipe):
+def create_recipe(recipe, current_user):
     """
     Expected data (object) for creating recipes:
     {
@@ -41,7 +41,7 @@ def create_recipe(recipe):
         # insert recipe into recipes table
         inserted_recipe = cur.execute(
             "INSERT INTO recipes (recipe_name, description, creator) VALUES (?, ?, ?)", 
-            (recipe['recipe_name'], recipe['description'], recipe['creator'],)
+            (recipe['recipe_name'], recipe['description'], current_user['user_id'],)
         )
         recipe_id = inserted_recipe.lastrowid
 
@@ -151,7 +151,6 @@ def get_recipe_by_id(recipe_id):
 
         method = []
         for row in cur.fetchall():
-            print(row)
             method.append(dict(zip(["step_no", "step"], row)))
 
     except:
@@ -162,7 +161,7 @@ def get_recipe_by_id(recipe_id):
     return { **recipe, "ingredients": ingredients, "method": method }
 
 
-def update_recipe(recipe, recipe_id):
+def update_recipe(recipe, recipe_id, current_user):
     """
     Currently updates title and description.
     TODO: Should be able to update ALL data about a recipe:
@@ -173,11 +172,15 @@ def update_recipe(recipe, recipe_id):
         conn = connect_to_db()
         cur = conn.cursor()
         cur.execute("""
-        UPDATE recipes SET recipe_name = ?, description = ? WHERE recipe_id = ? AND creator = ?
+        UPDATE recipes SET 
+        recipe_name = ?, 
+        description = ? 
+        WHERE recipe_id = ? AND creator = ?
         """, 
         (recipe["recipe_name"], 
         recipe["description"], 
-        recipe_id, recipe["creator"],)
+        recipe_id, 
+        current_user['user_id'],)
         )
         conn.commit()
         #return the recipe
@@ -191,7 +194,7 @@ def update_recipe(recipe, recipe_id):
     return updated_recipe
 
 
-def delete_recipe(recipe, recipe_id):
+def delete_recipe(recipe_id, current_user):
     """
     Delete recipe using recipe_id from url and creator id.
     """
@@ -201,13 +204,14 @@ def delete_recipe(recipe, recipe_id):
         cur = conn.cursor()
         cur.execute("PRAGMA foreign_keys=ON")
         # check that the recipe exists
-        cur.execute("SELECT * FROM recipes WHERE recipe_id = ? AND creator = ?", (recipe_id, recipe['creator'],))
-        print(cur.lastrowid)
+        cur.execute("SELECT * FROM recipes WHERE recipe_id = ? AND creator = ?", 
+            (recipe_id, current_user['user_id'],))
 
         if cur.fetchone is None:
             message["status"] = "Recipe not found"
         else:
-            cur.execute("DELETE from recipes WHERE recipe_id = ? AND creator = ?", (recipe_id, recipe['creator'],))
+            cur.execute("DELETE from recipes WHERE recipe_id = ? AND creator = ?", 
+            (recipe_id, current_user['user_id'],))
             conn.commit()
             message["status"] = "Recipe deleted successfully"
     except:
@@ -220,26 +224,24 @@ def delete_recipe(recipe, recipe_id):
 
 
 def search_recipes(search_value):
-    # try:
-    conn = connect_to_db()
-    conn.row_factory = sqlite3.Row
-    cur = conn.cursor()
-    # TODO: search not working (rebuild DB?) - may need to allow a rowid in the FTS?
-    recipes = []
-    # works: SELECT * FROM recipes WHERE recipe_name = ?
-    cur.execute("""
-    SELECT * FROM recipes WHERE recipe_id IN (SELECT ROWID FROM recipes_fts WHERE recipe_name MATCH ? OR description MATCH ? ORDER BY rank)
-    """,
-    (search_value + "*", search_value + "*",)
-    )
-    print(search_value)
-    for recipe in cur.fetchall():
-            print(recipe)
+    try:
+        conn = connect_to_db()
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        # TODO: search not working (rebuild DB?) - may need to allow a rowid in the FTS?
+        recipes = []
+        # works: SELECT * FROM recipes WHERE recipe_name = ?
+        cur.execute("""
+        SELECT * FROM recipes WHERE recipe_id IN (SELECT ROWID FROM recipes_fts WHERE recipe_name MATCH ? OR description MATCH ? ORDER BY rank)
+        """,
+        (search_value + "*", search_value + "*",)
+        )
+
+        for recipe in cur.fetchall():
             recipes.append(dict(zip(["recipe_id", "recipe_name", "description", "creator"], recipe)))
-    print(recipes)
-    # except:
-    #     recipes = {}
-    # finally:
-    #     conn.close()
+    except:
+        recipes = {}
+    finally:
+        conn.close()
 
     return recipes

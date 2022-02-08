@@ -22,7 +22,8 @@ def create_users_table():
                 user_id INTEGER PRIMARY KEY NOT NULL,
                 name TEXT NOT NULL,
                 email TEXT NOT NULL,
-                password TEXT NOT NULL
+                password TEXT NOT NULL,
+                UNIQUE(email)
             );
         ''')
         conn.commit()
