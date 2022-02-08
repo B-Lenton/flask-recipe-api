@@ -121,6 +121,9 @@ def get_recipe_by_id(recipe_id):
             (recipe_id,)
         )
         recipe = cur.fetchone()
+
+        if recipe is None:
+            recipe = { "message": "recipe does not exist" }
         
         cur.execute(
             """
@@ -170,27 +173,33 @@ def update_recipe(recipe, recipe_id, current_user):
     updated_recipe = {}
     try:
         conn = connect_to_db()
+        conn.row_factory = sqlite3.Row
         cur = conn.cursor()
-        cur.execute("""
-        UPDATE recipes SET 
-        recipe_name = ?, 
-        description = ? 
-        WHERE recipe_id = ? AND creator = ?
-        """, 
-        (recipe["recipe_name"], 
-        recipe["description"], 
-        recipe_id, 
-        current_user['user_id'],)
+        cur.execute("SELECT creator FROM recipes WHERE recipe_id = ?",
+            (recipe_id,)
         )
-        conn.commit()
-        #return the recipe
-        updated_recipe = get_recipe_by_id(recipe_id)
+        if cur.fetchone()['creator'] == current_user['user_id']:
+            cur.execute("""
+                UPDATE recipes SET 
+                recipe_name = ?, 
+                description = ? 
+                WHERE recipe_id = ? AND creator = ?
+                """, 
+                (recipe["recipe_name"], 
+                recipe["description"], 
+                recipe_id, 
+                current_user['user_id'],)
+            )
+            conn.commit()
+            updated_recipe = get_recipe_by_id(recipe_id)
+        else:
+            updated_recipe = {}
     except:
         conn.rollback()
         updated_recipe = {}
     finally:
         conn.close()
-
+    print(updated_recipe)
     return updated_recipe
 
 
@@ -201,13 +210,15 @@ def delete_recipe(recipe_id, current_user):
     message = {}
     try:
         conn = connect_to_db()
+        conn.row_factory = sqlite3.Row
         cur = conn.cursor()
         cur.execute("PRAGMA foreign_keys=ON")
+
         # check that the recipe exists
         cur.execute("SELECT * FROM recipes WHERE recipe_id = ? AND creator = ?", 
             (recipe_id, current_user['user_id'],))
 
-        if cur.fetchone is None:
+        if cur.fetchone() is None:
             message["status"] = "Recipe not found"
         else:
             cur.execute("DELETE from recipes WHERE recipe_id = ? AND creator = ?", 

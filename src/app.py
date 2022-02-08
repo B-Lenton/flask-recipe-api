@@ -76,9 +76,6 @@ def signup_user():
 def login_user():
 
     auth = request.authorization
-    print(auth)
-    print(auth.username)
-    print(auth.password)
 
     if not auth or not auth.username or not auth.password:
         return make_response('could not verify', 401, 
@@ -128,7 +125,7 @@ def api_update_recipe(current_user, recipe_id):
 
 @app.route('/api/recipes/delete/<int:recipe_id>',  methods = ['DELETE'])
 @token_required
-def api_delete_recipe(recipe_id, current_user):
+def api_delete_recipe(current_user, recipe_id):
     # recipe = request.get_json() - also deleted recipe from below func params.
     return jsonify(delete_recipe(recipe_id, current_user))
 
