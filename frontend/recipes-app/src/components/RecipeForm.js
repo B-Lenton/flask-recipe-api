@@ -1,50 +1,57 @@
 import React, { useState } from "react";
 
+import "./RecipeForm.css"
 
-export default class RecipeForm extends React.Component {
-    constructor(props) {
-      super(props);
 
-        this.state = {
-            recipe_name: "",
-            description: "",
-            ingredients: [
-                {
-                    name: "",
-                    unit: "",
-                    quantity: ""
-                }
-            ],
-            method: [
-                {
-                    step_no: 1,
-                    step: ""
-                }
-            ]
-        };
-    }
+// export default class RecipeForm extends React.Component {
+//     constructor(props) {
+//       super(props);
 
-    changeHandler = e => {
-        this.setState({ [e.target.name]: e.target.value })
-    }
+//         this.state = {
+//             recipe_name: "",
+//             description: "",
+//             ingredients: [
+//                 {
+//                     name: "",
+//                     unit: "",
+//                     quantity: ""
+//                 }
+//             ],
+//             method: [
+//                 {
+//                     step_no: 1,
+//                     step: ""
+//                 }
+//             ]
+//         };
+//     }
 
-    submitHandler = e => {
-        e.preventDefault();
-        console.log(this.state)
-    }
+//     changeHandler = e => {
+//         this.setState({ [e.target.name]: e.target.value })
+//     }
 
-    render() {
-        const { recipe_name, description, ingredients, method } = this.state
+//     submitHandler = e => {
+//         e.preventDefault();
+//         console.log(this.state)
+//     }
+
+function RecipeForm() {
+// TODO: change ingredient state to an object with name, unit, quantity...
+    const [ingredientList, setIngredientList] = useState([{ingredient: ''}]);
+
+        // const { recipe_name, description, ingredients, method } = this.state
         return (
-            <form onSubmit={this.submitHandler}>
+            <form className="recipe-form"
+                // onSubmit={this.submitHandler}
+            >
                 <div className="form-field">
-                    <label htmlFor="recipe_name">Recipe Name</label>
+                    {/* <label htmlFor="recipe_name">Recipe Name</label>
                     <div className="recipe-name">
                         <input
                             type="text"
                             name="recipe_name"
-                            value={recipe_name}
-                            onChange={this.changeHandler}
+                            // value={recipe_name}
+                            // onChange={this.changeHandler}
                             placeholder="Recipe Name"
                             required
                         />
@@ -54,56 +61,64 @@ export default class RecipeForm extends React.Component {
                         <textarea
                             type="text"
                             name="description"
-                            value={description}
-                            onChange={this.changeHandler}
+                            // value={description}
+                            // onChange={this.changeHandler}
                             placeholder="Description"
                             required
                         />
-                    </div>
+                    </div> */}
                     <label htmlFor="ingredients">Ingredients</label>
-                    <div className="ingredients">
-                        <input
-                            type="text"
-                            name="ingredients"
-                            value={ingredients}
-                            onChange={this.changeHandler}
-                            placeholder="Ingredients"
-                        />
-                        <input
-                            type="text"
-                            name="ingredients"
-                            value={ingredients}
-                            onChange={this.changeHandler}
-                            placeholder="Ingredients"
-                        />
-                        <input
-                            type="text"
-                            name="ingredients"
-                            value={ingredients}
-                            onChange={this.changeHandler}
-                            placeholder="Ingredients"
-                        />
-                        <button type="button" className="add-btn">
-                            New Ingredient
-                        </button>
-                        <button type="button" className="remove-btn">
-                            Remove
-                        </button>
-                    </div>
-                    <div>
+
+                    {ingredientList.map((singleIngredient, index) => (
+                        <div key={index} className="ingredients">
+                            <div className="first-division">
+                                <input
+                                    type="text"
+                                    name="ingredients"
+                                    // value={ingredients}
+                                    // onChange={this.changeHandler}
+                                    placeholder="Ingredient"
+                                />
+                                <input
+                                    type="text"
+                                    name="unit"
+                                    // value={ingredients}
+                                    // onChange={this.changeHandler}
+                                    placeholder="Unit"
+                                />
+                                <input
+                                    type="text"
+                                    name="quantity"
+                                    // value={ingredients}
+                                    // onChange={this.changeHandler}
+                                    placeholder="Quantity"
+                                />
+                            </div>
+                                {ingredientList.length - 1 === index && (
+                                    <button type="button" className="add-btn">
+                                        New Ingredient
+                                    </button>
+                                )}
+                            <div className="second-division">
+                                <button type="button" className="remove-btn">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    ))}
+                    {/* <div>
                         <input
                             type="text"
                             name="method"
-                            value={method}
-                            onChange={this.changeHandler}
+                            // value={method}
+                            // onChange={this.changeHandler}
                             placeholder="Method"
                         />
-                    </div>
+                    </div> */}
                     <button type="submit">Publish Recipe</button>
                 </div>
             </form>
         )
-    }
 
     // fetchMeasurementUnits = () => {
     //     //show progress bar
@@ -186,6 +201,7 @@ export default class RecipeForm extends React.Component {
     // }
 }
 
+export default RecipeForm;
 
 // export const RecipeForm = () => {
 //     const [inputList, setInputList] = useState({
