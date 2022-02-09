@@ -3,19 +3,15 @@
 }
   
 .recipe-form {
-    width: 70vh;
-    margin: 5rem auto;
+    position: relative;
+    padding: 2em;
+    margin: 1rem auto;
     display: flex;
     justify-content: space-between;
 }
 
 .form-field {
     flex: 2;
-}
-
-.output {
-    margin-left: 3rem;
-    flex: 1;
 }
 
 .form-field label,
@@ -42,6 +38,7 @@ input:focus {
 .ingredients {
     display: flex;
     justify-content: space-between;
+    align-items: baseline;
 }
 
 .first-division {
@@ -65,10 +62,6 @@ button {
 }
 
 .add-btn {
-    align-self: flex-start;
-    display: flex;
-    align-items: center;
-    margin-top: 0.5rem;
     color: rgb(0, 208, 255);
     border: 1px solid rgb(0, 208, 255);
 }

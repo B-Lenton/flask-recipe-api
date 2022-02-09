@@ -128,12 +128,12 @@ function RecipeForm() {
                                 value={singleIngredient.ingredient.quantity}
                                 onChange={(e) => handleIngredientChange(e, index)}
                             />
+                            {ingredientList.length - 1 === index && (
+                                <button type="button" className="add-btn" onClick={handleIngredientAdd}>
+                                    New Ingredient
+                                </button>
+                            )}
                         </div>
-                        {ingredientList.length - 1 === index && (
-                            <button type="button" className="add-btn" onClick={handleIngredientAdd}>
-                                New Ingredient
-                            </button>
-                        )}
                         <div className="second-division">
                             {ingredientList.length > 1 && (
                                 <button type="button" className="remove-btn" onClick={() => handleIngredientRemove(index)}>
