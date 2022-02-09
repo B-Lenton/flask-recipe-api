@@ -36,16 +36,45 @@ import "./RecipeForm.css"
 //     }
 
 function RecipeForm() {
-// TODO: change ingredient state to an object with name, unit, quantity...
-    const [ingredientList, setIngredientList] = useState([{ingredient: ''}]);
+    // TODO: Repeat for method and then for recipe (simpler) and put it all together!
+    // Or does it need to be one large object?
+    const [ingredientList, setIngredientList] = useState([{ ingredient: {
+        name: "",
+        unit: "",
+        quantity: ""
+    } }]);
 
-        // const { recipe_name, description, ingredients, method } = this.state
-        return (
-            <form className="recipe-form"
-                // onSubmit={this.submitHandler}
-            >
-                <div className="form-field">
-                    {/* <label htmlFor="recipe_name">Recipe Name</label>
+    console.log(ingredientList);
+
+    const handleIngredientAdd = () => {
+        setIngredientList([...ingredientList, { ingredient: {
+            name: "",
+            unit: "",
+            quantity: ""
+        } }])
+    };
+
+    const handleIngredientRemove = (index) => {
+        const list = [...ingredientList];
+        list.splice(index, 1);
+        setIngredientList(list);
+    };
+
+    // NOW WORKING!!
+    const handleIngredientChange = (e, index) => {
+        const { name, value } = e.target;
+        console.log(name, value);
+        const list = [...ingredientList];
+        list[index].ingredient[name] = value;
+        setIngredientList(list);
+    };
+
+    return (
+        <form className="recipe-form"
+        // onSubmit={this.submitHandler}
+        >
+            <div className="form-field">
+                {/* <label htmlFor="recipe_name">Recipe Name</label>
                     <div className="recipe-name">
                         <input
                             type="text"
@@ -67,46 +96,54 @@ function RecipeForm() {
                             required
                         />
                     </div> */}
-                    <label htmlFor="ingredients">Ingredients</label>
+                <label htmlFor="ingredients">Ingredients</label>
 
-                    {ingredientList.map((singleIngredient, index) => (
-                        <div key={index} className="ingredients">
-                            <div className="first-division">
-                                <input
-                                    type="text"
-                                    name="ingredients"
-                                    // value={ingredients}
-                                    // onChange={this.changeHandler}
-                                    placeholder="Ingredient"
-                                />
-                                <input
-                                    type="text"
-                                    name="unit"
-                                    // value={ingredients}
-                                    // onChange={this.changeHandler}
-                                    placeholder="Unit"
-                                />
-                                <input
-                                    type="text"
-                                    name="quantity"
-                                    // value={ingredients}
-                                    // onChange={this.changeHandler}
-                                    placeholder="Quantity"
-                                />
-                            </div>
-                                {ingredientList.length - 1 === index && (
-                                    <button type="button" className="add-btn">
-                                        New Ingredient
-                                    </button>
-                                )}
-                            <div className="second-division">
-                                <button type="button" className="remove-btn">
+                {ingredientList.map((singleIngredient, index) => (
+                    <div key={index} className="ingredients">
+                        <div className="first-division">
+                            <input
+                                type="text"
+                                name="name"
+                                // value={ingredients}
+                                // onChange={this.changeHandler}
+                                placeholder="Ingredient"
+                                value={singleIngredient.ingredient.name}
+                                onChange={(e) => handleIngredientChange(e, index)}
+                            />
+                            <input
+                                type="text"
+                                name="unit"
+                                // value={ingredients}
+                                // onChange={this.changeHandler}
+                                placeholder="Unit"
+                                value={singleIngredient.ingredient.unit}
+                                onChange={(e) => handleIngredientChange(e, index)}
+                            />
+                            <input
+                                type="text"
+                                name="quantity"
+                                // value={ingredients}
+                                // onChange={this.changeHandler}
+                                placeholder="Quantity"
+                                value={singleIngredient.ingredient.quantity}
+                                onChange={(e) => handleIngredientChange(e, index)}
+                            />
+                        </div>
+                        {ingredientList.length - 1 === index && (
+                            <button type="button" className="add-btn" onClick={handleIngredientAdd}>
+                                New Ingredient
+                            </button>
+                        )}
+                        <div className="second-division">
+                            {ingredientList.length > 1 && (
+                                <button type="button" className="remove-btn" onClick={() => handleIngredientRemove(index)}>
                                     Remove
                                 </button>
-                            </div>
+                            )}
                         </div>
-                    ))}
-                    {/* <div>
+                    </div>
+                ))}
+                {/* <div>
                         <input
                             type="text"
                             name="method"
@@ -115,15 +152,15 @@ function RecipeForm() {
                             placeholder="Method"
                         />
                     </div> */}
-                    <button type="submit">Publish Recipe</button>
-                </div>
-            </form>
-        )
+                <button type="submit">Publish Recipe</button>
+            </div>
+        </form>
+    )
 
     // fetchMeasurementUnits = () => {
     //     //show progress bar
     //     this.setState({ isLoading: true });
- 
+
     //     // TODO: Need to create this endpoint to fetch units rather than recipes (for drop down list)
     //     // fetch(`/api/v1/recipes/measurement-units`)
     //     fetch(`/api/v1/recipes`)
@@ -145,29 +182,29 @@ function RecipeForm() {
     // componentDidMount() {
     //     this.fetchMeasurementUnits();
     // }
-  
+
     // handleRecipeNameChanged(event) {
     //     var recipe = this.state.recipe;
     //     recipe.recipe_name = event.target.value;
     //     this.setState({ recipe: recipe });
     // }
-  
+
     // handleDescriptionChanged(event) {
     //     var recipe = this.state.recipe;
     //     recipe.description = event.target.value;
     //     this.setState({ recipe: recipe });
     // }
-  
+
     // handleIngredientsChanged(event) {
     //     var recipe = this.state.recipe;
     //     recipe.ingredients = event.target.value;
     //     this.setState({ recipe: recipe });
     // }
-  
+
     // handleButtonClicked() {
     //     console.log(this.state.recipe);
     // }
- 
+
     // render() {
     //     return (
     //         <div>
