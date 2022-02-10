@@ -36,7 +36,10 @@ import "./RecipeForm.css"
 //     }
 
 function RecipeForm() {
+    const [recipeName, setRecipeName] = useState("");
+    const [recipeDescription, setRecipeDescription] = useState("");
     const [units, setUnits] = useState([]);
+    const [message, setMessage] = useState("");
 
     useEffect(() => {
         fetch("/api/v1/recipes/units").then(response => 
@@ -46,45 +49,34 @@ function RecipeForm() {
         );
     }, []);
 
-    const [inputList, setInputList] = useState({
-        recipe_name: "",
-        description: "",
-        ingredients: [],
-        method: [
-            {
-                step_no: 1,
-                step: ""
-            }
-        ]
-    });
-
-    console.log(inputList);
-
-    const handleChange = e => {
+    const handleRecipeOverviewChange = e => {
         const { name, value } = e.target;
-        setInputList({
-            ...inputList,
-            [name]: value,
-            ingredients: ingredientList
-        });
+        if (name === "recipe_name") {
+            setRecipeName(value);
+            console.log(recipeName);
+        }
+        if (name === "description") {
+            setRecipeDescription(value);
+            console.log(recipeDescription);
+        }
     };
 
     // TODO: Repeat for method and then for recipe (simpler) and put it all together!
     // Or does it need to be one large object?
-    const [ingredientList, setIngredientList] = useState([{ ingredient: {
+    const [ingredientList, setIngredientList] = useState([{
         name: "",
         unit: "",
         quantity: ""
-    } }]);
+    }]);
 
     console.log(ingredientList);
 
     const handleIngredientAdd = () => {
-        setIngredientList([...ingredientList, { ingredient: {
+        setIngredientList([...ingredientList, {
             name: "",
             unit: "",
             quantity: ""
-        } }])
+        }])
     };
 
     const handleIngredientRemove = (index) => {
@@ -97,13 +89,82 @@ function RecipeForm() {
     const handleIngredientChange = (e, index) => {
         const { name, value } = e.target;
         const list = [...ingredientList];
-        list[index].ingredient[name] = value;
+        list[index][name] = value;
         setIngredientList(list);
+    };
+
+    // Method
+    const [methodList, setMethodList] = useState([{
+        step_no: 1,
+        step: ""
+    }]);
+
+    console.log(methodList);
+
+    const handleStepAdd = (index) => {
+        setMethodList([...methodList, {
+            step_no: index + 2,
+            step: ""
+        }])
+    };
+
+    const handleStepRemove = (index) => {
+        const list = [...methodList];
+        list.splice(index, 1);
+        console.log(index, list.length)
+        if (index < list.length) {
+            for (let i = list.length -1; i >= index; i--) {
+                list[i].step_no += -1;
+            }
+        }
+        setMethodList(list);
+    };
+
+    // This needs to be called on the main recipe change handler
+    const handleMethodChange = (e, index) => {
+        const { name, value } = e.target;
+        const list = [...methodList];
+        list[index][name] = value;
+        setMethodList(list);
+    };
+
+    let submitHandler = async (e) => {
+        e.preventDefault();
+        try {
+            let res = await fetch("/api/v1/recipes/add", {
+                method: "POST",
+                body: JSON.stringify({
+                    recipe_name: recipeName,
+                    description: recipeDescription,
+                    ingredients: ingredientList,
+                    method: methodList,
+                }),
+            });
+            let resJson = await res.json();
+            if (res.status === 200 || res.status === 201) {
+                setRecipeName("");
+                setRecipeDescription("");
+                setIngredientList([{
+                    name: "",
+                    unit: "",
+                    quantity: ""
+                }]);
+                setMethodList([{
+                    step_no: 1,
+                    step: ""
+                }]);
+                setMessage("Recipe created successfully!");
+            } else {
+                setMessage("An error occurred.");
+            }
+        } catch (err) {
+            throw new Error(err);
+        }
     };
 
     return (
         <form className="recipe-form"
-        // onSubmit={this.submitHandler}
+        onSubmit={submitHandler}
         >
             <div className="form-field">
                 <label htmlFor="recipe_name">Recipe Name</label>
@@ -111,8 +172,8 @@ function RecipeForm() {
                     <input
                         type="text"
                         name="recipe_name"
-                        value={inputList.recipe_name}
-                        onChange={handleChange}
+                        value={recipeName}
+                        onChange={handleRecipeOverviewChange}
                         placeholder="Recipe Name"
                         required
                     />
@@ -122,8 +183,8 @@ function RecipeForm() {
                     <textarea
                         type="text"
                         name="description"
-                        value={inputList.description}
-                        onChange={handleChange}
+                        value={recipeDescription}
+                        onChange={handleRecipeOverviewChange}
                         placeholder="Description"
                         required
                     />
@@ -139,13 +200,13 @@ function RecipeForm() {
                                 // value={ingredients}
                                 // onChange={this.changeHandler}
                                 placeholder="Ingredient"
-                                value={singleIngredient.ingredient.name}
+                                value={singleIngredient.name}
                                 onChange={(e) => handleIngredientChange(e, index)}
                                 required
                             />
                             <select
                                 name="unit"
-                                value={singleIngredient.ingredient.unit}
+                                value={singleIngredient.unit}
                                 onChange={(e) => handleIngredientChange(e, index)}
                                 required
                             >
@@ -167,7 +228,7 @@ function RecipeForm() {
                                 // value={ingredients}
                                 // onChange={this.changeHandler}
                                 placeholder="Quantity"
-                                value={singleIngredient.ingredient.quantity}
+                                value={singleIngredient.quantity}
                                 onChange={(e) => handleIngredientChange(e, index)}
                                 required
                             />
@@ -186,16 +247,48 @@ function RecipeForm() {
                         </div>
                     </div>
                 ))}
-                {/* <div>
-                        <input
-                            type="text"
-                            name="method"
-                            // value={method}
-                            // onChange={this.changeHandler}
-                            placeholder="Method"
-                        />
-                    </div> */}
+
+                <label htmlFor="method">Method</label>
+                {methodList.map((singleMethod, index) => (
+                    <div key={index} className="method">
+                        <div className="first-division">
+                            <input
+                                type="number"
+                                name="step_no"
+                                placeholder={singleMethod.step_no}
+                                value={singleMethod.step_no}
+                                // onChange={(e) => handleMethodChange(e, index)}
+                                required
+                                disabled
+                            />
+                            <input
+                                type="text"
+                                name="step"
+                                placeholder="Step Instructions"
+                                value={singleMethod.step}
+                                onChange={(e) => handleMethodChange(e, index)}
+                                required
+                            />
+                            {methodList.length - 1 === index && (
+                                <button type="button" className="add-btn" onClick={() => handleStepAdd(index)}>
+                                    New Step
+                                </button>
+                            )}
+                        </div>
+                        <div className="second-division">
+                            {methodList.length > 1 && (
+                                <button type="button" className="remove-btn" onClick={() => handleStepRemove(index)}>
+                                    Remove
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                ))}
                 <button type="submit">Publish Recipe</button>
+
+                <div className="message">
+                    {message ? <p>{message}</p> : null}
+                </div>
             </div>
         </form>
     )
