@@ -248,3 +248,22 @@ def search_recipes(search_value):
         conn.close()
 
     return recipes
+
+
+def display_measurement_units():
+    try:
+        conn = connect_to_db()
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        units = []
+        cur.execute(
+            "SELECT measurement_type FROM measurement_units"
+        )
+        for unit in cur.fetchall():
+            units.append(dict(zip(["measurement_type"], unit)))
+    except:
+        units = {}
+    finally:
+        conn.close()
+
+    return units

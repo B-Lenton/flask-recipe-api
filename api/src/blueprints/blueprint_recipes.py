@@ -36,3 +36,7 @@ def api_delete_recipe(current_user, recipe_id):
 def api_search_recipes():
     query_string = request.query_string.decode() 
     return jsonify(search_recipes(query_string))
+
+@blueprint_recipes.route('/units', methods=['GET'])
+def api_get_units():
+    return jsonify(display_measurement_units())

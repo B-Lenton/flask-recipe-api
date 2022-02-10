@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import "./RecipeForm.css"
 
@@ -36,6 +36,31 @@ import "./RecipeForm.css"
 //     }
 
 function RecipeForm() {
+    const [units, setUnits] = useState([]);
+
+    useEffect(() => {
+        fetch("/api/v1/recipes/units").then(response => 
+            response.json().then(data => {
+                console.log(data);
+                setUnits(data);
+            })
+        );
+    }, []);
+
+    // fetch(`/api/v1/recipes/units`).then(response => 
+    //     response.json()).then(data => {
+    //         console.log(data)
+    //         if (Array.isArray(data)) {
+    //             console.log(JSON.stringify(data));
+    //             // this.setState({ ingredients: data ,
+    //                             // isLoading: false});
+    //         } else {
+    //             // this.setState({ ingredients: [],
+    //                             // isLoading: false  
+    //                             // });
+    //         }
+    //     });
+
     // TODO: Repeat for method and then for recipe (simpler) and put it all together!
     // Or does it need to be one large object?
     const [ingredientList, setIngredientList] = useState([{ ingredient: {
@@ -110,7 +135,7 @@ function RecipeForm() {
                                 value={singleIngredient.ingredient.name}
                                 onChange={(e) => handleIngredientChange(e, index)}
                             />
-                            <input
+                            <select
                                 type="text"
                                 name="unit"
                                 // value={ingredients}
@@ -118,7 +143,18 @@ function RecipeForm() {
                                 placeholder="Unit"
                                 value={singleIngredient.ingredient.unit}
                                 onChange={(e) => handleIngredientChange(e, index)}
-                            />
+                            >
+                                {units.map((unit, index) => {
+                                    return (
+                                        <option 
+                                            key={index} 
+                                            value={unit.measurement_type}
+                                        >
+                                            {unit.measurement_type}
+                                        </option>
+                                    )
+                                })}
+                            </select>
                             <input
                                 type="text"
                                 name="quantity"

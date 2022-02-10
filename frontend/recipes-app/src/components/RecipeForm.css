@@ -22,7 +22,8 @@ h2 {
     color: rgb(84, 84, 84);
 }
 
-input {
+input,
+select {
     height: 35px;
     width: 100%;
     padding: 7px;
