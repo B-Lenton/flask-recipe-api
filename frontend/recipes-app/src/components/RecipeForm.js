@@ -41,25 +41,33 @@ function RecipeForm() {
     useEffect(() => {
         fetch("/api/v1/recipes/units").then(response => 
             response.json().then(data => {
-                console.log(data);
                 setUnits(data);
             })
         );
     }, []);
 
-    // fetch(`/api/v1/recipes/units`).then(response => 
-    //     response.json()).then(data => {
-    //         console.log(data)
-    //         if (Array.isArray(data)) {
-    //             console.log(JSON.stringify(data));
-    //             // this.setState({ ingredients: data ,
-    //                             // isLoading: false});
-    //         } else {
-    //             // this.setState({ ingredients: [],
-    //                             // isLoading: false  
-    //                             // });
-    //         }
-    //     });
+    const [inputList, setInputList] = useState({
+        recipe_name: "",
+        description: "",
+        ingredients: [],
+        method: [
+            {
+                step_no: 1,
+                step: ""
+            }
+        ]
+    });
+
+    console.log(inputList);
+
+    const handleChange = e => {
+        const { name, value } = e.target;
+        setInputList({
+            ...inputList,
+            [name]: value,
+            ingredients: ingredientList
+        });
+    };
 
     // TODO: Repeat for method and then for recipe (simpler) and put it all together!
     // Or does it need to be one large object?
@@ -85,10 +93,9 @@ function RecipeForm() {
         setIngredientList(list);
     };
 
-    // NOW WORKING!!
+    // This needs to be called on the main recipe change handler
     const handleIngredientChange = (e, index) => {
         const { name, value } = e.target;
-        console.log(name, value);
         const list = [...ingredientList];
         list[index].ingredient[name] = value;
         setIngredientList(list);
@@ -99,30 +106,30 @@ function RecipeForm() {
         // onSubmit={this.submitHandler}
         >
             <div className="form-field">
-                {/* <label htmlFor="recipe_name">Recipe Name</label>
-                    <div className="recipe-name">
-                        <input
-                            type="text"
-                            name="recipe_name"
-                            // value={recipe_name}
-                            // onChange={this.changeHandler}
-                            placeholder="Recipe Name"
-                            required
-                        />
-                    </div>
-                    <label htmlFor="description">Description</label>
-                    <div className="description">
-                        <textarea
-                            type="text"
-                            name="description"
-                            // value={description}
-                            // onChange={this.changeHandler}
-                            placeholder="Description"
-                            required
-                        />
-                    </div> */}
-                <label htmlFor="ingredients">Ingredients</label>
+                <label htmlFor="recipe_name">Recipe Name</label>
+                <div className="recipe-name">
+                    <input
+                        type="text"
+                        name="recipe_name"
+                        value={inputList.recipe_name}
+                        onChange={handleChange}
+                        placeholder="Recipe Name"
+                        required
+                    />
+                </div>
+                <label htmlFor="description">Description</label>
+                <div className="description">
+                    <textarea
+                        type="text"
+                        name="description"
+                        value={inputList.description}
+                        onChange={handleChange}
+                        placeholder="Description"
+                        required
+                    />
+                </div>
 
+                <label htmlFor="ingredients">Ingredients</label>
                 {ingredientList.map((singleIngredient, index) => (
                     <div key={index} className="ingredients">
                         <div className="first-division">
@@ -134,16 +141,15 @@ function RecipeForm() {
                                 placeholder="Ingredient"
                                 value={singleIngredient.ingredient.name}
                                 onChange={(e) => handleIngredientChange(e, index)}
+                                required
                             />
                             <select
-                                type="text"
                                 name="unit"
-                                // value={ingredients}
-                                // onChange={this.changeHandler}
-                                placeholder="Unit"
                                 value={singleIngredient.ingredient.unit}
                                 onChange={(e) => handleIngredientChange(e, index)}
+                                required
                             >
+                                <option>Select Quantity</option>
                                 {units.map((unit, index) => {
                                     return (
                                         <option 
@@ -163,6 +169,7 @@ function RecipeForm() {
                                 placeholder="Quantity"
                                 value={singleIngredient.ingredient.quantity}
                                 onChange={(e) => handleIngredientChange(e, index)}
+                                required
                             />
                             {ingredientList.length - 1 === index && (
                                 <button type="button" className="add-btn" onClick={handleIngredientAdd}>
