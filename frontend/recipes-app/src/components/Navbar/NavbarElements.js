@@ -10,7 +10,6 @@ export const Nav = styled.nav`
     align-items: center;
     padding: 0.2rem calc((100vw) / 20);
     z-index: 12;
-    margin-bottom: 3em;
 `;
 export const NavLogo = styled(Link)`
   cursor: pointer;
@@ -23,16 +22,16 @@ export const NavLogo = styled(Link)`
 `;
 
 export const NavLink = styled(Link)`
-color: #fff;
-display: flex;
-align-items: center;
-text-decoration: none;
-padding: 0 1rem;
-height: 100%;
-cursor: pointer;
-&:hover {
-  color: #ffe61c;
-}
+    color: #fff;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    padding: 0 1rem;
+    height: 100%;
+    cursor: pointer;
+    &:hover {
+    color: #ffe61c;
+    }
 `;
 
 export const NavMenu = styled.div`
@@ -75,7 +74,7 @@ export const NavBtnLink = styled(Link)`
 
 export const CloseToggle = styled(FaTimes)`
   position: fixed;
-  top: 2%;
+  top: 2.5%;
   right: 5%;
   color: #fff;
   display: flex;
@@ -95,11 +94,11 @@ export const StyledToggle = styled(FaBars)`
     transform: translate(-100%, 75%);
     font-size: 1.8rem;
     cursor: pointer;
+    background: #486582;
   }
 `;
 
 export const Ul = styled.ul`
-    z-index: 12;
     list-style: none;
     display: flex;
     flex-flow: row nowrap;
@@ -107,21 +106,24 @@ export const Ul = styled.ul`
         padding: 18px 10px;
     }
     @media (max-width: 768px) {
+        z-index: 2;
         flex-flow: column nowrap;
         background-color: #486582;
         position: fixed;
         top: 0;
         right: 0;
-        height: 100vh;
-        width: 35vw;
+        height: 400px;
+        width: 50vw;
         padding-top: 3.5rem;
         li {
             color: #fff;
         }
     }
     @media (max-width: 578px) {
-        height: 45vh;
+        position: absolute;
+        height: 350px;
         width: 100vw;
-        overflow: scroll;
+        padding-top: 1em;
+        border-bottom: 4px solid #223140;
     }
 `;

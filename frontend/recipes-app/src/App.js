@@ -3,7 +3,8 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Link
+  Link,
+  Routes
 } from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -40,8 +41,16 @@ function App() {
       ) : <RightNav handleNavToggle={handleNavToggle}/> }
       <div className="App">
         <section className="container">
-          <Recipes recipes={recipes}/>
-          <RecipeForm />
+          <Routes>
+            <Route 
+              path="recipes"
+              element={<Recipes recipes={recipes}/>}
+            ></Route>
+            <Route 
+              path="create"
+              element={<RecipeForm />}
+            ></Route>
+          </Routes>
         </section>
       </div>
     </Router>
