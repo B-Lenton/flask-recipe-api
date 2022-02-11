@@ -1,13 +1,28 @@
 import React, { useEffect, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
-// TODO: run 'npm i semantic-ui-react semantic-ui-css' in recipe-app/frontend/recipes-app THEN import into index.js and use (https://www.youtube.com/watch?v=06pWsB_hoD4)
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './App.css';
 import RecipeForm from "./components/RecipeForm";
 import { Recipes } from "./components/Recipes";
+import NavBar from "./components/Navbar/index";
+import { StyledToggle } from "./components/Navbar/NavbarElements";
+import RightNav from "./components/Navbar/RightNav";
 
 function App() {
   const [recipes, setRecipes] = useState([]);
+
+  const [navToggled, setNavToggled] = useState("false");
+    
+  const handleNavToggle = () => {
+      setNavToggled(!navToggled);
+  }
   
   useEffect(() => {
     fetch("/api/v1/recipes").then(response => 
@@ -19,12 +34,17 @@ function App() {
 
   
   return (
-    <div className="App">
-      <section className="container">
-        <Recipes recipes={recipes}/>
-        <RecipeForm />
-      </section>
-    </div>
+    <Router>
+      {navToggled ? (
+        <NavBar handleNavToggle={handleNavToggle}/>
+      ) : <RightNav handleNavToggle={handleNavToggle}/> }
+      <div className="App">
+        <section className="container">
+          <Recipes recipes={recipes}/>
+          <RecipeForm />
+        </section>
+      </div>
+    </Router>
   );
 }
 

@@ -1,0 +1,12 @@
+.recipes__container {
+    display: flex;
+    justify-content: center;
+}
+
+.recipes__list {
+    list-style: none;
+}
+
+.recipes__list-item {
+    color: rebeccapurple;
+}
