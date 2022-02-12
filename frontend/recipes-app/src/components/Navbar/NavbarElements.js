@@ -1,27 +1,78 @@
-import { FaBars, FaTimes } from "react-icons/fa";
-import { NavLink as Link } from "react-router-dom";
 import styled from "styled-components";
+import { Link as LinkR } from "react-router-dom";
+import { Link as LinkS } from "react-scroll";
 
 export const Nav = styled.nav`
-    background: #486582;
-    height: 85px;
+    background: ${({ scrollNav }) => (scrollNav ? "#486582" : "#000000d6")};
+    height: 80px;
+    margin-top: -80px;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    padding: 0.2rem calc((100vw) / 20);
-    z-index: 12;
-`;
-export const NavLogo = styled(Link)`
-  cursor: pointer;
-  color: #fff;
-  font-size: 2rem;
-  text-decoration: none;
-  &:hover {
-    color: #ffe61c;
-  }
+    font-size: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+
+    @media screen and (max-width: 960px) {
+        transition: 0.8s all ease;
+    }
 `;
 
-export const NavLink = styled(Link)`
+export const NavbarContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    height: 80px;
+    z-index: 1;
+    padding: 0 24px;
+    width: 100%;
+    max-width: 1100px;
+`;
+
+export const NavLogo = styled(LinkR)`
+    color: #fff;
+    justify-self: flex-start;
+    cursor: pointer;
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    margin-left: 24px;
+    font-weight: bold;
+    text-decoration: none;
+`;
+
+export const MobileIcon = styled.div`
+    display: none;
+
+    @media screen and (max-width: 768px) {
+        display: block;
+        position: absolute;
+        top: -10px;
+        right: 0;
+        transform: translate(-100%, 60%);
+        font-size: 1.8rem;
+        cursor: pointer;
+        color: #fff;
+    }
+`;
+
+export const NavMenu = styled.ul`
+    display: flex;
+    align-items: center;
+    list-style: none;
+    text-align: center;
+    margin: 0;
+
+    @media screen and (max-width: 768px) {
+        display: none;
+    }
+`;
+
+export const NavItem = styled.li`
+    height: 80px;
+`;
+
+export const NavLink = styled(LinkS)`
     color: #fff;
     display: flex;
     align-items: center;
@@ -29,101 +80,41 @@ export const NavLink = styled(Link)`
     padding: 0 1rem;
     height: 100%;
     cursor: pointer;
-    &:hover {
-    color: #ffe61c;
+
+    &.active {
+        border-bottom: 3px solid #01bf71;
     }
-`;
-
-export const NavMenu = styled.div`
-  display: flex;
-  align-items: center;
-  margin-right: -24px;
-
-  @media screen and (max-width: 768px) {
-    display: none;
-  }
 `;
 
 export const NavBtn = styled.nav`
-  display: flex;
-  align-items: center;
-  margin-right: 24px;
-
-  @media screen and (max-width: 768px) {
-    display: none;
-  }
-`;
-
-export const NavBtnLink = styled(Link)`
-  border-radius: 4px;
-  background: transparent;
-  padding: 10px 22px;
-  color: #fff;
-  outline: none;
-  border: 1px solid #fff;
-  cursor: pointer;
-  transition: all 0.2s ease-in-out;
-  text-decoration: none;
-  margin-left: 24px;
-  &:hover {
-    transition: all 0.2s ease-in-out;
-    background: #fff;
-    color: #808080;
-  }
-`;
-
-export const CloseToggle = styled(FaTimes)`
-  position: fixed;
-  top: 2.5%;
-  right: 5%;
-  color: #fff;
-  display: flex;
-  place-items: center;
-  font-size: 2rem;
-  cursor: pointer;
-`
-
-export const StyledToggle = styled(FaBars)`
-  display: none;
-  color: #fff;
-  @media screen and (max-width: 768px) {
-    display: block;
-    position: absolute;
-    top: 0;
-    right: 0;
-    transform: translate(-100%, 75%);
-    font-size: 1.8rem;
-    cursor: pointer;
-    background: #486582;
-  }
-`;
-
-export const Ul = styled.ul`
-    list-style: none;
     display: flex;
-    flex-flow: row nowrap;
-    li {
-        padding: 18px 10px;
+    align-items: center;
+
+    @media screen and (max-width: 768px) {
+        display: none;
     }
-    @media (max-width: 768px) {
-        z-index: 2;
-        flex-flow: column nowrap;
-        background-color: #486582;
-        position: fixed;
-        top: 0;
-        right: 0;
-        height: 400px;
-        width: 50vw;
-        padding-top: 3.5rem;
-        li {
-            color: #fff;
-        }
+`;
+
+export const NavBtnLink = styled(LinkR)`
+    border-radius: 50px;
+    background: #a6fbff;
+    white-space: nowrap;
+    padding: 10px 22px;
+    color: #010606;
+    font-size: 16px;
+    outline: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    text-decoration: none;
+
+    &:hover {
+        transition: all 0.2s ease-in-out;
+        background: #fff;
+        color: #486582;
     }
-    @media (max-width: 578px) {
-        position: absolute;
-        height: 350px;
-        width: 100vw;
-        padding-top: 1em;
-        border-bottom: 4px solid #223140;
+
+    @media screen and (max-width: 768px) {
+        display: none;
     }
 `;

@@ -12,9 +12,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
 import RecipeForm from "./components/RecipeForm";
 import { Recipes } from "./components/Recipes";
-import NavBar from "./components/Navbar/index";
-import { StyledToggle } from "./components/Navbar/NavbarElements";
-import RightNav from "./components/Navbar/RightNav";
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Navbar/Sidebar";
 
 function App() {
   const [recipes, setRecipes] = useState([]);
@@ -33,21 +32,29 @@ function App() {
     );
   }, []);
 
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggle = () => {
+    setIsOpen(!isOpen);
+  }
+
   
   return (
     <Router>
-      {navToggled ? (
-        <NavBar handleNavToggle={handleNavToggle}/>
-      ) : <RightNav handleNavToggle={handleNavToggle}/> }
+      {isOpen ? (
+        <Sidebar isOpen={isOpen} toggle={toggle} />
+      ) : (
+        <Navbar toggle={toggle} />
+      )}
       <div className="App">
         <section className="container">
           <Routes>
             <Route 
-              path="recipes"
-              element={<Recipes recipes={recipes}/>}
+              path="/recipes"
+              element={<Recipes recipes={recipes} />}
             ></Route>
             <Route 
-              path="create"
+              path="/create"
               element={<RecipeForm />}
             ></Route>
           </Routes>
