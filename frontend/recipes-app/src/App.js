@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
-  Switch,
   Route,
   Link,
-  Routes
+  Routes,
 } from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './App.css';
-import RecipeForm from "./components/RecipeForm";
-import { Recipes } from "./components/Recipes";
+import RecipeForm from "./components//pages/RecipeForm";
+import { Recipes } from "./components/pages/Recipes";
+import LoginPage from "./components/pages/Login";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Navbar/Sidebar";
 
@@ -56,6 +56,10 @@ function App() {
             <Route 
               path="/create"
               element={<RecipeForm />}
+            ></Route>
+            <Route 
+              path="/sign-in"
+              element={<LoginPage />}
             ></Route>
           </Routes>
         </section>
