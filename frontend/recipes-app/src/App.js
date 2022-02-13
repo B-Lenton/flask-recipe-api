@@ -73,12 +73,12 @@ function App() {
                 path="/recipes"
                 element={<Recipes recipes={recipes} />}
               ></Route>
-              {token && (
+              {/* {token && ( */}
                 <Route 
                   path="/create"
                   element={<RecipeForm />}
                 ></Route>
-              )}
+              {/* )} */}
               <Route 
                 path="/sign-in"
                 element={<LoginPage />}

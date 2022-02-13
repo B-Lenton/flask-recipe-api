@@ -4,7 +4,7 @@
   
 .recipe-form {
     position: relative;
-    padding: 2em;
+    padding: 3em;
     margin: 1rem auto;
     display: flex;
     justify-content: space-between;
@@ -16,20 +16,25 @@
 
 .form-field label,
 h2 {
-    margin: 0;
+    margin-bottom: .8em;
+    padding: .1em .8em;
+    border-radius: .5em;
     font-size: 18px;
     font-weight: 500;
-    color: rgb(84, 84, 84);
+    color: rgb(46, 46, 46);
+    box-shadow: 1px 1px 10px 2px rgba(0, 0, 0, 0.342);
 }
 
 input,
-select {
-    height: 35px;
+select,
+textarea {
+    height: 50px;
     width: 100%;
-    padding: 7px;
+    padding: 8px;
     outline: none;
     border-radius: 5px;
     border: 1px solid rgb(220, 220, 220);
+    margin-bottom: 2em;
 }
 
 input:focus {
@@ -58,16 +63,19 @@ button {
     outline: none;
     cursor: pointer;
     font-weight: 500;
-    border-radius: 2px;
-    padding: 5px 10px;
+    border-radius: 1em;
+    padding: 8px 15px;
+    border: 2px solid rgb(0, 200, 0);
+    background: rgb(190, 255, 190);
 }
 
 .add-btn {
-    color: rgb(0, 208, 255);
+    background: #a6fbff;
     border: 1px solid rgb(0, 208, 255);
 }
 
 .remove-btn {
+    background: none;
     color: red;
     border: 1px solid red;
 }

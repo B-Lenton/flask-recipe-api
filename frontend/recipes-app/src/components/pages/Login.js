@@ -1,5 +1,4 @@
 import React, { useContext, useState } from "react";
-import { Buffer } from "bu"
 
 import "./Login.css";
 import AuthContext from "../../context/auth-context";
@@ -37,26 +36,22 @@ function LoginPage() {
     let submitHandler = async (event) => {
         event.preventDefault();
 
-        // try {
+        try {
             let res;
             if (isLogin) {
-                const encodedUsername = Buffer.from(email).toString('base64');
-                const encodedPassword = Buffer.from(password).toString('base64');
                 let requestBody = {
-                    username: encodedUsername,
-                    password: encodedPassword
+                    username: email,
+                    password: password
                 };
                 console.log(requestBody);
                 res = await fetch("/api/v1/auth/login", {
                     method: "POST",
                     body: JSON.stringify(requestBody),
                     headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Basic" + requestBody
+                        "Content-Type": "application/json"
                     }
                 });
                 console.log(res);
-                console.log(res.headers);
             }
             if (!isLogin) {
                 let requestBody = {
@@ -94,9 +89,9 @@ function LoginPage() {
                 setEmail("");
                 setPassword("");
             }
-        // } catch (err) {
-        //     throw new Error(err);
-        // }
+        } catch (err) {
+            throw new Error(err);
+        }
     }
 
     return (
