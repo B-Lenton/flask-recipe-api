@@ -1,132 +1,147 @@
-import React, { Component } from "react";
+import React, { useContext, useState } from "react";
+import { Buffer } from "bu"
 
 import "./Login.css";
 import AuthContext from "../../context/auth-context";
 
-class LoginPage extends Component {
-    state = {
-        isLogin: true
+function LoginPage() {
+
+    const authContext = useContext(AuthContext);
+    const [isLogin, setIsLogin] = useState(true);
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [message, setMessage] = useState("");
+
+    const switchModeHandler = () => {
+        setIsLogin(!isLogin);
     };
 
-    static contextType = AuthContext;
+    const changeHandler = (event) => {
+        const { name, value } = event.target;
 
-    constructor(props) {
-        // could instead set up two-way binding, manage state & listen to changes
-        super(props);
-        this.emailEl = React.createRef();
-        this.passwordEl = React.createRef();
+        if (name === "name") {
+            console.log(name, value);
+            setName(value);
+        }
+        if (name === "email") {
+            console.log(name, value);
+            setEmail(value);
+        }
+        if (name === "password") {
+            console.log(name, value);
+            setPassword(value);
+        }
     }
 
-    switchModeHandler = () => {
-        this.setState(prevState => {
-            return { isLogin: !prevState.isLogin };
-        });
-    };
-
-    submitHandler = (event) => {
+    let submitHandler = async (event) => {
         event.preventDefault();
-        const email = this.emailEl.current.value;
-        const password = this.passwordEl.current.value;
 
-        if (email.trim().length === 0 || password.trim().length === 0) {
-            return;
-        }
+        // try {
+            let res;
+            if (isLogin) {
+                const encodedUsername = Buffer.from(email).toString('base64');
+                const encodedPassword = Buffer.from(password).toString('base64');
+                let requestBody = {
+                    username: encodedUsername,
+                    password: encodedPassword
+                };
+                console.log(requestBody);
+                res = await fetch("/api/v1/auth/login", {
+                    method: "POST",
+                    body: JSON.stringify(requestBody),
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Basic" + requestBody
+                    }
+                });
+                console.log(res);
+                console.log(res.headers);
+            }
+            if (!isLogin) {
+                let requestBody = {
+                    name: name,
+                    email: email,
+                    password: password
+                };
+                console.log(requestBody);
+                res = await fetch("/api/v1/auth/register", {
+                    // configure the request
+                    method: "POST",
+                    body: JSON.stringify(requestBody),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                console.log(res);
+            }
 
-        // TODO: continue from here and adapt accordingly:
-        if (this.state.isLogin) {
-            let requestBody = {
-                username: email,
-                password: password
-            };
-            fetch("auth/login", {
-                // configure the request
-                method: "POST",
-                body: JSON.stringify(requestBody),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(res => {
-                if (res.status !== 200 && res.status !== 201) {
-                    throw new Error("Failed");
-                }
-                return res.json();
-            })
-            .then(resData => {
-                if (resData.data.login.token) {
-                    this.context.login(
-                        resData.data.login.token, 
-                        resData.data.login.userId, 
-                        resData.data.login.tokenExpiration
-                    );
-                }
-            })
-            .catch(err => {
-                console.log(err);
-            });
-        }
-
-        if (!this.state.isLogin) {
-            const name = this.nameEl.current.value;
-            requestBody = {
-                name: name,
-                email: email,
-                password: password
-            };
-            fetch("auth/register", {
-                // configure the request
-                method: "POST",
-                body: JSON.stringify(requestBody),
-                headers: {
-                    "Content-Type": "application/json"
-                }
-            })
-            .then(res => {
-                if (res.status !== 200 && res.status !== 201) {
-                    throw new Error("Failed");
-                }
-                return res.json();
-            })
-            .then(resData => {
-                if (resData.data.login.token) {
-                    this.context.login(
-                        resData.data.login.token, 
-                        resData.data.login.userId, 
-                        resData.data.login.tokenExpiration
-                    );
-                }
-            })
-            .catch(err => {
-                console.log(err);
-            });
-        };
+            let resJson = await res.json()
+            if (res.status === 200 || res.status === 201) {
+                console.log(res);
+                console.log(resJson);
+            } else {
+                setMessage("Incorrect email or password entered.");
+                console.log(res);
+                console.log(resJson);
+            }
+            if (resJson.login.token) {
+                authContext.login(
+                    resJson.login.token, 
+                    resJson.login.userId, 
+                );
+                setName("");
+                setEmail("");
+                setPassword("");
+            }
+        // } catch (err) {
+        //     throw new Error(err);
+        // }
     }
 
-
-
-
-    render() {
-        return (
-            <form className="auth-form" onSubmit={this.submitHandler}>
+    return (
+        <form className="auth-form" onSubmit={submitHandler}>
+            {!isLogin && (
                 <div className="form-control">
                     <label htmlFor="name">Name</label>
-                    <input type="name" id="name" ref={this.nameEl}></input>
+                    <input 
+                        name="name"
+                        type="name" 
+                        id="name"
+                        onChange={changeHandler}
+                        placeholder="Name"
+                        required
+                    ></input>
                 </div>
-                <div className="form-control">
-                    <label htmlFor="email">Email</label>
-                    <input type="email" id="email" ref={this.emailEl}></input>
-                </div>
-                <div className="form-control">
-                    <label htmlFor="password">Password</label>
-                    <input type="password" id="password" ref={this.passwordEl}></input>
-                </div>
-                <div className="form-actions">
-                    <button type="submit">Submit</button>
-                    <button type="button" onClick={this.switchModeHandler}>Switch to {this.state.isLogin ? "Signup" : "Login"}</button>
-                </div>
-            </form>
-        );
-    }
+            )}
+            <div className="form-control">
+                <label htmlFor="email">Email</label>
+                <input 
+                    name="email"
+                    type="email" 
+                    id="email"
+                    onChange={changeHandler}
+                    placeholder="Email address"
+                    required
+                ></input>
+            </div>
+            <div className="form-control">
+                <label htmlFor="password">Password</label>
+                <input 
+                    name="password"
+                    type="password" 
+                    id="password"
+                    onChange={changeHandler}
+                    placeholder="Password"
+                    required
+                ></input>
+            </div>
+            <div className="form-actions">
+                <button type="submit">Submit</button>
+                <button type="button" onClick={switchModeHandler}>Switch to {isLogin ? "Signup" : "Login"}</button>
+            </div>
+        </form>
+    );
 }
 
 export default LoginPage;
