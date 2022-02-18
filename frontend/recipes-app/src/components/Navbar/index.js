@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { FaBars } from 'react-icons/fa';
 import { IconContext } from 'react-icons/lib';
 import { Nav, NavbarContainer, NavLogo, MobileIcon, NavMenu, NavItem, NavLink, NavBtn, NavBtnLink } from "./NavbarElements";
+import { Header, useToken } from "./components/Auth";
+
 
 const Navbar = ({ toggle }) => {
     const [scrollNav, setScrollNav] = useState(false);
@@ -17,6 +19,8 @@ const Navbar = ({ toggle }) => {
     useEffect(() => {
         window.addEventListener("scroll", changeNav)
     }, []);
+
+    const { removeToken } = useToken();
 
     return (
         <>
@@ -39,7 +43,9 @@ const Navbar = ({ toggle }) => {
                             </NavItem>
                         </NavMenu>
                         <NavBtn>
+                            // TODO: below (and sign in above) should be either or (depending on token):
                             <NavBtnLink to="/sign-up">Sign Up</NavBtnLink>
+                            <Header token={removeToken}/>
                         </NavBtn>
                     </NavbarContainer>
                 </Nav>

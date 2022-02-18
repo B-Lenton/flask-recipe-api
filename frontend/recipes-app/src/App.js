@@ -13,6 +13,7 @@ import AuthContext from "./context/auth-context";
 import RecipeForm from "./components//pages/RecipeForm";
 import { Recipes } from "./components/pages/Recipes";
 import Login from "./components/pages/Login";
+import Signup from "./components/pages/Signup";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Navbar/Sidebar";
 import { Header, useToken } from "./components/Auth";
@@ -67,9 +68,11 @@ function App() {
               <Navbar toggle={toggle} />
           )}
 
-          <Header token={removeToken}/>
           {!token && token !== "" && token !== undefined ? (
-            {isLogin ? ( <Login setToken={setToken} /> ) : (
+            // TODO: does this need to be routed?
+            {isLogin ? (
+              <Login setToken={setToken} />
+            ) : (
               <Signup />
             )
             <button
@@ -89,10 +92,10 @@ function App() {
                     path="/create"
                     element={<RecipeForm token={token} setToken={setToken}/>}
                   ></Route>
-                <Route
-                  path="/sign-in"
-                  element={<LoginPage />}
-                ></Route>
+//                <Route
+//                  path="/sign-in"
+//                  element={<LoginPage />}
+//                ></Route>
               </Routes>
             </section>
           )
