@@ -267,3 +267,32 @@ def display_measurement_units():
         conn.close()
 
     return units
+
+
+def get_user_profile_by_id(user_id):
+    try:
+        conn = connect_to_db()
+        conn.row_factory = sqlite3.Row
+        cur = conn.cursor()
+        cur.execute(
+            "SELECT * FROM users WHERE user_id = ?",
+            (user_id,)
+        )
+        user = cur.fetchone()
+
+        recipes = []
+        cur.execute(
+            "SELECT * FROM recipes WHERE creator = ?",
+            (user_id,))
+
+        for recipe in cur.fetchall():
+            recipes.append(dict(zip(["recipe_id", "recipe_name", "description", "creator"], recipe)))
+
+        response_body = {
+            "recipes": recipes,
+            "name": user["name"],
+            "about": "Add an about section?"
+        }
+        return response_body
+    except:
+        return {"message": "An error occurred"}
