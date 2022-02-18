@@ -1,40 +1,87 @@
-import React, { useContext, useState } from "react";
-
 import "./Login.css";
-import AuthContext from "../../context/auth-context";
 
-function LoginPage() {
-
-    const authContext = useContext(AuthContext);
-    const [isLogin, setIsLogin] = useState(true);
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
     const [message, setMessage] = useState("");
 
-    const switchModeHandler = () => {
-        setIsLogin(!isLogin);
-    };
+import { useState } from 'react';
+import axios from "axios";
 
-    const changeHandler = (event) => {
-        const { name, value } = event.target;
+function Login(props) {
 
-        if (name === "name") {
-            console.log(name, value);
-            setName(value);
+    const [loginForm, setLoginForm] = useState({
+      name: "",
+      email: "",
+      password: ""
+    })
+
+    function logIn(event) {
+      axios({
+        method: "POST",
+        url:"/login",
+        data:{
+          name: loginForm.name,
+          email: loginForm.email,
+          password: loginForm.password
+         }
+      })
+      .then((response) => {
+        props.setToken(response.data.access_token);
+      }).catch((error) => {
+        if (error.response) {
+          console.log(error.response);
+          console.log(error.response.status);
+          console.log(error.response.headers);
         }
-        if (name === "email") {
-            console.log(name, value);
-            setEmail(value);
-        }
-        if (name === "password") {
-            console.log(name, value);
-            setPassword(value);
-        }
+      })
+
+      setLoginForm(
+        ({
+          name: "",
+          email: "",
+          password: ""
+        })
+      );
+
+      event.preventDefault();
     }
 
-    let submitHandler = async (event) => {
-        event.preventDefault();
+    function handleChange(event) {
+      const {value, name} = event.target;
+      setLoginForm(prevState => ({
+          ...prevState, [name]: value})
+    )}
+
+    return (
+      <div>
+        <h1>Login</h1>
+          <form className="login">
+            <input onChange={handleChange}
+                  type="name"
+                  text={loginForm.name}
+                  name="name"
+                  placeholder="Name"
+                  value={loginForm.name} />
+            <input onChange={handleChange}
+                  type="email"
+                  text={loginForm.email}
+                  name="email"
+                  placeholder="Email"
+                  value={loginForm.email} />
+            <input onChange={handleChange}
+                  type="password"
+                  text={loginForm.password}
+                  name="password"
+                  placeholder="Password"
+                  value={loginForm.password} />
+
+          <button onClick={logIn}>Submit</button>
+        </form>
+      </div>
+    );
+}
+
+export default Login;
+
+
 
         try {
             let res;
@@ -133,7 +180,6 @@ function LoginPage() {
             </div>
             <div className="form-actions">
                 <button type="submit">Submit</button>
-                <button type="button" onClick={switchModeHandler}>Switch to {isLogin ? "Signup" : "Login"}</button>
             </div>
         </form>
     );

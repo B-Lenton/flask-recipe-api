@@ -12,12 +12,14 @@ import './App.css';
 import AuthContext from "./context/auth-context";
 import RecipeForm from "./components//pages/RecipeForm";
 import { Recipes } from "./components/pages/Recipes";
-import LoginPage from "./components/pages/Login";
+import Login from "./components/pages/Login";
 import Navbar from "./components/Navbar";
 import Sidebar from "./components/Navbar/Sidebar";
+import { Header, useToken } from "./components/Auth";
 
 function App() {
 
+  const { token, removeToken, setToken } = useToken();
   const [recipes, setRecipes] = useState([]);
   const [navToggled, setNavToggled] = useState("false");
   const [token, setToken] = useState(null);
@@ -51,40 +53,49 @@ function App() {
     setIsOpen(!isOpen);
   }
 
+  const [isLogin, setIsLogin] = useState(true);
+  const switchModeHandler = () => {
+    setIsLogin(!isLogin);
+  };
+
   return (
     <Router>
-      <AuthContext.Provider
-        value={{
-          token: token,
-          userId: userId,
-          login: login,
-          logout: logout
-        }}
-      >
-        {isOpen ? (
-          <Sidebar isOpen={isOpen} toggle={toggle} />
-        ) : (
-          <Navbar toggle={toggle} />
-        )}
         <div className="App">
-          <section className="container">
-            <Routes>
-              <Route 
-                path="/recipes"
-                element={<Recipes recipes={recipes} />}
-              ></Route>
-              {/* {token && ( */}
-                <Route 
-                  path="/create"
-                  element={<RecipeForm />}
+          {isOpen ? (
+              <Sidebar isOpen={isOpen} toggle={toggle} />
+            ) : (
+              <Navbar toggle={toggle} />
+          )}
+
+          <Header token={removeToken}/>
+          {!token && token !== "" && token !== undefined ? (
+            {isLogin ? ( <Login setToken={setToken} /> ) : (
+              <Signup />
+            )
+            <button
+              type="button"
+              onClick={switchModeHandler}
+            >
+              Switch to {isLogin ? "Signup" : "Login"}
+            </button>
+          ) : (
+            <section className="container">
+              <Routes>
+                <Route
+                  path="/recipes"
+                  element={<Recipes recipes={recipes} />}
                 ></Route>
-              {/* )} */}
-              <Route 
-                path="/sign-in"
-                element={<LoginPage />}
-              ></Route>
-            </Routes>
-          </section>
+                  <Route
+                    path="/create"
+                    element={<RecipeForm token={token} setToken={setToken}/>}
+                  ></Route>
+                <Route
+                  path="/sign-in"
+                  element={<LoginPage />}
+                ></Route>
+              </Routes>
+            </section>
+          )
         </div>
       </AuthContext.Provider>
     </Router>
