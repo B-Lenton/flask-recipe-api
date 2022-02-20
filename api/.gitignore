@@ -2,3 +2,4 @@ recipe-app
 __pycache__
 .env
 config.py
+.pytest_cache

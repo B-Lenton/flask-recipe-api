@@ -18,21 +18,21 @@ def api_get_recipe(recipe_id):
 
 
 @blueprint_recipes.route('/add',  methods=['POST'])
-@jwt_required
+@jwt_required()
 def api_add_recipe(current_user):
     recipe = request.get_json()
     return jsonify(create_recipe(recipe, current_user))
 
 
 @blueprint_recipes.route('/update/<int:recipe_id>',  methods=['PUT'])
-@jwt_required
+@jwt_required()
 def api_update_recipe(current_user, recipe_id):
     recipe = request.get_json()
     return jsonify(update_recipe(recipe, recipe_id, current_user))
 
 
 @blueprint_recipes.route('/delete/<int:recipe_id>',  methods=['DELETE'])
-@jwt_required
+@jwt_required()
 def api_delete_recipe(current_user, recipe_id):
     return jsonify(delete_recipe(recipe_id, current_user))
 
@@ -48,6 +48,6 @@ def api_get_units():
     return jsonify(display_measurement_units())
 
 
-@blueprint_recipes.route('user/<int:user_id>', methods=['GET'])
+@blueprint_recipes.route('/user/<int:user_id>', methods=['GET'])
 def api_view_profile(user_id):
     return jsonify(get_user_profile_by_id(user_id))
