@@ -1,6 +1,11 @@
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+
+import useToken from "./useToken";
 
 function Logout(props) {
+  const { removeToken } = useToken();
+  const navigate = useNavigate();
 
   function logOut() {
     axios({
@@ -16,6 +21,10 @@ function Logout(props) {
         console.log(error.response.headers);
       }
     });
+
+    removeToken();
+    navigate("../sign-in", { replace: true });
+    window.location.reload();
   }
 
     return(

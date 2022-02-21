@@ -1,11 +1,15 @@
 import sqlite3
 
+from flask import request
 from flask_jwt_extended import get_jwt_identity
 
 from db_connection import connect_to_db
 
 
 def create_recipe(recipe):
+    print(recipe)
+    print(request.get_json())
+    print(request.json.get("recipe_name", None))
     """
     Expected data (object) for creating recipes:
     {
