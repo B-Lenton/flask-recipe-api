@@ -3,38 +3,40 @@ import {
   BrowserRouter as Router,
   Route,
   Link,
-  Routes,
+  Routes
 } from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './App.css';
-import AuthContext from "./context/auth-context";
+// import AuthContext from "./context/auth-context";
 import RecipeForm from "./components//pages/RecipeForm";
 import { Recipes } from "./components/pages/Recipes";
 import Login from "./components/pages/Login";
 import Signup from "./components/pages/Signup";
-import Navbar from "./components/Navbar";
+import Navbar from "./components/Navbar/index";
 import Sidebar from "./components/Navbar/Sidebar";
-import { Header, useToken } from "./components/Auth";
+import Header from "./components/Auth/Header";
+import useToken from "./components/Auth/useToken";
+
 
 function App() {
 
   const { token, removeToken, setToken } = useToken();
   const [recipes, setRecipes] = useState([]);
   const [navToggled, setNavToggled] = useState("false");
-  const [token, setToken] = useState(null);
-  const [userId, setUserId] = useState(null);
+  // const [token, setToken] = useState(null);
+  // const [userId, setUserId] = useState(null);
 
-  const login = (token, userId) => {
-    setToken(token);
-    setUserId(userId);
-  }
+  // const login = (token, userId) => {
+  //   setToken(token);
+  //   setUserId(userId);
+  // }
 
-  const logout = () => {
-    setToken(null);
-    setUserId(null);
-  }
+  // const logout = () => {
+  //   setToken(null);
+  //   setUserId(null);
+  // }
     
   const handleNavToggle = () => {
       setNavToggled(!navToggled);
@@ -54,53 +56,47 @@ function App() {
     setIsOpen(!isOpen);
   }
 
-  const [isLogin, setIsLogin] = useState(true);
-  const switchModeHandler = () => {
-    setIsLogin(!isLogin);
-  };
+  // const [isLogin, setIsLogin] = useState(true);
+  // const switchModeHandler = () => {
+  //   setIsLogin(!isLogin);
+  // };
 
   return (
     <Router>
-        <div className="App">
-          {isOpen ? (
-              <Sidebar isOpen={isOpen} toggle={toggle} />
-            ) : (
-              <Navbar toggle={toggle} />
-          )}
-
-          {!token && token !== "" && token !== undefined ? (
-            // TODO: does this need to be routed?
-            {isLogin ? (
-              <Login setToken={setToken} />
-            ) : (
-              <Signup />
-            )
-            <button
-              type="button"
-              onClick={switchModeHandler}
-            >
-              Switch to {isLogin ? "Signup" : "Login"}
-            </button>
+      <div className="App">
+        {isOpen ? (
+            <Sidebar isOpen={isOpen} toggle={toggle} />
           ) : (
-            <section className="container">
-              <Routes>
-                <Route
-                  path="/recipes"
-                  element={<Recipes recipes={recipes} />}
-                ></Route>
+            <Navbar toggle={toggle} />
+        )}
+
+        <Routes>
+          {!token && token !== "" && token !== undefined ? (
+            <>
+              <Route
+                path="/sign-in"
+                element={<Login setToken={setToken} />}
+              ></Route>
+              <Route
+                path="/sign-up"
+                element={<Signup />}
+              ></Route>
+            </>
+                
+          ) : (
+              <>
                   <Route
-                    path="/create"
-                    element={<RecipeForm token={token} setToken={setToken}/>}
+                    path="/recipes"
+                    element={<Recipes recipes={recipes} />}
                   ></Route>
-//                <Route
-//                  path="/sign-in"
-//                  element={<LoginPage />}
-//                ></Route>
-              </Routes>
-            </section>
-          )
-        </div>
-      </AuthContext.Provider>
+                    <Route
+                      path="/create"
+                      element={<RecipeForm token={token} setToken={setToken}/>}
+                    ></Route>
+              </>
+          )}            
+        </Routes>
+      </div>
     </Router>
   );
 }

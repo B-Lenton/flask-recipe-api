@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 import "./Auth.css";
 
@@ -86,6 +87,11 @@ function Signup(props) {
           </div>
           <div className="form-actions">
             <button onClick={signUp}>Submit</button>
+          </div>
+          <div className="sign-up-link">
+            <Link to="/sign-in">
+              Already have an account? Login Now
+            </Link>
           </div>
           <div className="message">
             {message ? <p>{message}</p> : null}

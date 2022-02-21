@@ -12,6 +12,7 @@ function useToken() {
   function saveToken(userToken) {
     localStorage.setItem('token', userToken);
     setToken(userToken);
+    console.log(userToken);
   };
 
   function removeToken() {

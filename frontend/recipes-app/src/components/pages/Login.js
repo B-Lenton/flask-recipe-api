@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from "axios";
+import { Link } from "react-router-dom";
 
 import "./Auth.css";
 
@@ -13,26 +14,31 @@ function Login(props) {
       password: ""
     })
 
-    function logIn(event) {
-      axios({
+    // TODO: Username and password show in url;
+    // TODO: signup doesn't redirect;
+    // TODO: remove setMessage
+    const logIn = async (event) => {
+      event.preventDefault();
+
+      const res = await axios({
         method: "POST",
         url:"/api/v1/auth/login",
         data: {
           email: loginForm.email,
           password: loginForm.password
         }
-      })
-      .then((response) => {
-        props.setToken(response.data.access_token);
-        setMessage("Login successful");
-      }).catch((error) => {
-        if (error.response) {
-          console.log(error.response);
-          console.log(error.response.status);
-          console.log(error.response.headers);
-          setMessage("Login failed");
-        }
-      })
+      });
+      console.log(res.data.access_token)
+      props.setToken(res.data.access_token);
+      setMessage("Login successful");
+      // }).catch((error) => {
+      //   if (error.response) {
+      //     console.log(error.response);
+      //     console.log(error.response.status);
+      //     console.log(error.response.headers);
+      //     setMessage("Login failed");
+      //   }
+      // }
 
       setLoginForm(
         ({
@@ -41,7 +47,6 @@ function Login(props) {
         })
       );
 
-      event.preventDefault();
     }
 
     function handleChange(event) {
@@ -74,6 +79,11 @@ function Login(props) {
           </div>
           <div className="form-actions">
             <button onClick={logIn}>Submit</button>
+          </div>
+          <div className="sign-up-link">
+            <Link to="/sign-up">
+              Don't have an account? Register Now
+            </Link>
           </div>
           <div className="message">
             {message ? <p>{message}</p> : null}

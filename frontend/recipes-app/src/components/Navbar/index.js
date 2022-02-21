@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { FaBars } from 'react-icons/fa';
 import { IconContext } from 'react-icons/lib';
 import { Nav, NavbarContainer, NavLogo, MobileIcon, NavMenu, NavItem, NavLink, NavBtn, NavBtnLink } from "./NavbarElements";
-import { Header, useToken } from "./components/Auth";
+import Header from "../Auth/Header";
+import useToken from "../Auth/useToken";
 
 
 const Navbar = ({ toggle }) => {
@@ -54,4 +55,4 @@ const Navbar = ({ toggle }) => {
     )
 }
 
-export default Navbar
+export default Navbar;
