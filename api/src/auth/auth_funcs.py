@@ -8,6 +8,7 @@ from db_connection import connect_to_db
 
 
 def signup_user():
+    # TODO: Handle email confirmation upon signup.
     data = request.get_json()
     hashed_password = generate_password_hash(data['password'], method='sha256')
     message = {}
@@ -19,12 +20,11 @@ def signup_user():
             (data['name'], data['email'], hashed_password,)
         )
         conn.commit()
-        message['status'] = 'Registered successfully'
     except sqlite3.IntegrityError:
         message['status'] = 'Email already registered'
         return message
 
-    return message
+    return login_user()
     
 
 def login_user():
