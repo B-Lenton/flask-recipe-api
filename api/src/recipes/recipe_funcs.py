@@ -1,9 +1,11 @@
 import sqlite3
 
+from flask_jwt_extended import get_jwt_identity
+
 from db_connection import connect_to_db
 
 
-def create_recipe(recipe, current_user):
+def create_recipe(recipe):
     """
     Expected data (object) for creating recipes:
     {
@@ -28,13 +30,19 @@ def create_recipe(recipe, current_user):
     created_recipe = {}
     try:
         conn = connect_to_db()
+        conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+
+        # get current logged-in user's user_id
+        current_user_id = cur.execute("SELECT user_id FROM users WHERE email = ?", (get_jwt_identity(),)).fetchone()
+
         # insert recipe into recipes table
         inserted_recipe = cur.execute(
             "INSERT INTO recipes (recipe_name, description, creator) VALUES (?, ?, ?)", 
-            (recipe['recipe_name'], recipe['description'], current_user['user_id'],)
+            (recipe['recipe_name'], recipe['description'], current_user_id[0],)
         )
         recipe_id = inserted_recipe.lastrowid
+        
         # Loop through each ingredient dict, extracting name and quantity for use in insert statements:
         for ingredient in recipe["ingredients"]:
             cur.execute(
@@ -45,7 +53,6 @@ def create_recipe(recipe, current_user):
                 "INSERT OR IGNORE INTO measurement_qty (qty_amount) VALUES (?)", 
                 (ingredient["quantity"],)
             )
-            # conn.commit() ???
             cur.execute(
                 "INSERT INTO recipe_ingredients VALUES ((?), (SELECT measurement_id FROM measurement_units WHERE measurement_type = ?), (SELECT qty_id FROM measurement_qty WHERE qty_amount = ?), (SELECT ingredient_id FROM ingredients WHERE ingredient_name = ?))", 
                 (
@@ -159,7 +166,7 @@ def get_recipe_by_id(recipe_id):
     return { **recipe, "ingredients": ingredients, "method": method }
 
 
-def update_recipe(recipe, recipe_id, current_user):
+def update_recipe(recipe, recipe_id):
     """
     Currently updates title and description.
     TODO: Should be able to update ALL data about a recipe:
@@ -170,10 +177,14 @@ def update_recipe(recipe, recipe_id, current_user):
         conn = connect_to_db()
         conn.row_factory = sqlite3.Row
         cur = conn.cursor()
+
+        # get current logged-in user's user_id
+        current_user_id = cur.execute("SELECT user_id FROM users WHERE email = ?", (get_jwt_identity(),)).fetchone()
+
         cur.execute("SELECT creator FROM recipes WHERE recipe_id = ?",
             (recipe_id,)
         )
-        if cur.fetchone()['creator'] == current_user['user_id']:
+        if cur.fetchone()['creator'] == current_user_id[0]:
             cur.execute("""
                 UPDATE recipes SET 
                 recipe_name = ?, 
@@ -183,12 +194,12 @@ def update_recipe(recipe, recipe_id, current_user):
                 (recipe["recipe_name"], 
                 recipe["description"], 
                 recipe_id, 
-                current_user['user_id'],)
+                current_user_id[0],)
             )
             conn.commit()
             updated_recipe = get_recipe_by_id(recipe_id)
         else:
-            updated_recipe = {}
+            return { "message": "Either the recipe does not exist or you are not authorised to update it." }
     except:
         conn.rollback()
         updated_recipe = {}
@@ -197,7 +208,7 @@ def update_recipe(recipe, recipe_id, current_user):
     return updated_recipe
 
 
-def delete_recipe(recipe_id, current_user):
+def delete_recipe(recipe_id):
     """
     Delete recipe using recipe_id from url and creator id.
     """
@@ -208,15 +219,18 @@ def delete_recipe(recipe_id, current_user):
         cur = conn.cursor()
         cur.execute("PRAGMA foreign_keys=ON")
 
+        # get current logged-in user's user_id
+        current_user_id = cur.execute("SELECT user_id FROM users WHERE email = ?", (get_jwt_identity(),)).fetchone()
+
         # check that the recipe exists
         cur.execute("SELECT * FROM recipes WHERE recipe_id = ? AND creator = ?", 
-            (recipe_id, current_user['user_id'],))
+            (recipe_id, current_user_id[0],))
 
         if cur.fetchone() is None:
             message["status"] = "Recipe not found"
         else:
             cur.execute("DELETE from recipes WHERE recipe_id = ? AND creator = ?", 
-            (recipe_id, current_user['user_id'],))
+            (recipe_id, current_user_id[0],))
             conn.commit()
             message["status"] = "Recipe deleted successfully"
     except:

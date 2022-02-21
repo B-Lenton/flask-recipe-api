@@ -55,6 +55,6 @@ def login_user():
 
 
 def logout_user():
-    response = {"message": "logout successful"}
+    response = {"result": True}
     return response
 

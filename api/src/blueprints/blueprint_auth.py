@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from flask_jwt_extended import unset_jwt_cookies, jwt_required
+from flask_jwt_extended import unset_jwt_cookies
 
 from auth.auth_funcs import *
 
@@ -18,7 +18,6 @@ def api_user_login():
 
 
 @blueprint_auth.route('/logout', methods=['POST'])
-@jwt_required()
 def api_user_logout():
     response = jsonify(logout_user())
     unset_jwt_cookies(response)
