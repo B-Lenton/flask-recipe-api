@@ -7,9 +7,6 @@ from db_connection import connect_to_db
 
 
 def create_recipe(recipe):
-    print(recipe)
-    print(request.get_json())
-    print(request.json.get("recipe_name", None))
     """
     Expected data (object) for creating recipes:
     {
@@ -101,7 +98,7 @@ def get_recipes():
             recipe["recipe_id"] = i["recipe_id"]
             recipe["recipe_name"] = i["recipe_name"]
             recipe["description"] = i["description"]
-            print(recipe)
+
             cur.execute("SELECT name FROM users WHERE user_id = ?", 
                 (i["creator"],))
             creator = cur.fetchone()
