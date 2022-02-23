@@ -1,4 +1,6 @@
 import React from 'react';
+import Logout from '../../Auth/Logout';
+import useToken from '../../Auth/useToken';
 
 import { 
     SidebarContainer,
@@ -11,24 +13,54 @@ import {
     SidebarLink
  } from './SidebarElements';
 
-const Sidebar = ({ isOpen, toggle }) => {
+const Sidebar = ({ isOpen, toggle, token }) => {
+
+  const { removeToken } = useToken();
+
   return (
     <SidebarContainer isOpen={isOpen} onClick={toggle}>
-        <Icon onClick={toggle}>
-            <CloseIcon />
-        </Icon>
-        <SidebarWrapper>
-            <SidebarMenu>
-                <SidebarLink to="recipes" onClick={toggle}>Recipes</SidebarLink>
-                <SidebarLink to="create" onClick={toggle}>Create</SidebarLink>
-                <SidebarLink to="sign-in" onClick={toggle}>Sign In</SidebarLink>
-            </SidebarMenu>
-            <SideBtnWrap>
-                <SidebarRoute to="/sign-up" onClick={toggle}>Sign Up</SidebarRoute>
-            </SideBtnWrap>
-        </SidebarWrapper>
+      <Icon onClick={toggle}>
+        <CloseIcon />
+      </Icon>
+      <SidebarWrapper>
+        <SidebarMenu>
+          <SidebarLink 
+            to="recipes" 
+            onClick={toggle}
+          >
+            Recipes
+          </SidebarLink>
+          <SidebarLink 
+            to="create" 
+            onClick={toggle}
+          >
+            Create
+          </SidebarLink>
+          {!token && (
+            <SidebarLink 
+              to="sign-in" 
+              onClick={toggle}
+            >
+              Sign In
+            </SidebarLink>
+          )}
+        </SidebarMenu>
+        <SideBtnWrap>
+          {!token && (
+            <SidebarRoute 
+              to="/sign-up" 
+              onClick={toggle}
+            >
+              Sign Up
+            </SidebarRoute>
+          )}
+          {token && token !== "" && token !== undefined && (
+            <Logout token={removeToken} />
+          )}
+        </SideBtnWrap>
+      </SidebarWrapper>
     </SidebarContainer>
   )
 }
 
-export default Sidebar
+export default Sidebar;

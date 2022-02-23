@@ -39,17 +39,17 @@ const Navbar = ({ toggle, token }) => {
                             <NavItem>
                                 <NavLink to="create">Create</NavLink>
                             </NavItem>
-                            {!token && token !== "" && token !== "undefined" && (
+                            {!token && (
                                 <NavItem>
                                     <NavLink to='sign-in'>Sign In</NavLink>
                                 </NavItem>
                             )}
                         </NavMenu>
                         <NavBtn>
-                            {!token && token !== "" && token !== "undefined" && (
+                            {!token && (
                                 <NavBtnLink to="/sign-up">Sign Up</NavBtnLink>
                             )}
-                            {token && token !== "" && token !== "undefined" && (
+                            {token && token !== "" && token !== undefined && (
                                 <Logout token={removeToken}/>
                             )}
                         </NavBtn>

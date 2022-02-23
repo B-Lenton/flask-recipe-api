@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
-  Link,
   Routes
 } from "react-router-dom";
 
@@ -28,7 +27,7 @@ function App() {
     );
   }, []);
 
-  const { token, removeToken, setToken } = useToken();
+  const { token, setToken } = useToken();
   const [recipes, setRecipes] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -40,11 +39,10 @@ function App() {
     <Router>
       <div className="App">
         {isOpen ? (
-            <Sidebar isOpen={isOpen} toggle={toggle} />
+            <Sidebar isOpen={isOpen} toggle={toggle} token={token} />
           ) : (
             <Navbar toggle={toggle} token={token} />
         )}
-
         <Routes>
           {!token && token !== "" && token !== undefined ? (
             <>
