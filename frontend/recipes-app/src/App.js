@@ -3,40 +3,23 @@ import {
   BrowserRouter as Router,
   Route,
   Link,
-  Routes,
+  Routes
 } from "react-router-dom";
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './App.css';
-import AuthContext from "./context/auth-context";
 import RecipeForm from "./components//pages/RecipeForm";
 import { Recipes } from "./components/pages/Recipes";
-import LoginPage from "./components/pages/Login";
-import Navbar from "./components/Navbar";
+import Login from "./components/pages/Login";
+import Signup from "./components/pages/Signup";
+import Navbar from "./components/Navbar/index";
 import Sidebar from "./components/Navbar/Sidebar";
+import useToken from "./components/Auth/useToken";
+
 
 function App() {
 
-  const [recipes, setRecipes] = useState([]);
-  const [navToggled, setNavToggled] = useState("false");
-  const [token, setToken] = useState(null);
-  const [userId, setUserId] = useState(null);
-
-  const login = (token, userId) => {
-    setToken(token);
-    setUserId(userId);
-  }
-
-  const logout = () => {
-    setToken(null);
-    setUserId(null);
-  }
-    
-  const handleNavToggle = () => {
-      setNavToggled(!navToggled);
-  }
-  
   useEffect(() => {
     fetch("/api/v1/recipes").then(response => 
       response.json().then(data => {
@@ -45,6 +28,8 @@ function App() {
     );
   }, []);
 
+  const { token, removeToken, setToken } = useToken();
+  const [recipes, setRecipes] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
   const toggle = () => {
@@ -53,40 +38,39 @@ function App() {
 
   return (
     <Router>
-      <AuthContext.Provider
-        value={{
-          token: token,
-          userId: userId,
-          login: login,
-          logout: logout
-        }}
-      >
+      <div className="App">
         {isOpen ? (
-          <Sidebar isOpen={isOpen} toggle={toggle} />
-        ) : (
-          <Navbar toggle={toggle} />
+            <Sidebar isOpen={isOpen} toggle={toggle} />
+          ) : (
+            <Navbar toggle={toggle} token={token} />
         )}
-        <div className="App">
-          <section className="container">
-            <Routes>
-              <Route 
+
+        <Routes>
+          {!token && token !== "" && token !== undefined ? (
+            <>
+              <Route
+                path="/sign-in"
+                element={<Login setToken={setToken} />}
+              ></Route>
+              <Route
+                path="/sign-up"
+                element={<Signup setToken={setToken} />}
+              ></Route>
+            </>
+          ) : (
+            <>
+              <Route
                 path="/recipes"
                 element={<Recipes recipes={recipes} />}
               ></Route>
-              {/* {token && ( */}
-                <Route 
-                  path="/create"
-                  element={<RecipeForm />}
-                ></Route>
-              {/* )} */}
-              <Route 
-                path="/sign-in"
-                element={<LoginPage />}
+              <Route
+                path="/create"
+                element={<RecipeForm token={token} setToken={setToken}/>}
               ></Route>
-            </Routes>
-          </section>
-        </div>
-      </AuthContext.Provider>
+            </>
+          )}            
+        </Routes>
+      </div>
     </Router>
   );
 }

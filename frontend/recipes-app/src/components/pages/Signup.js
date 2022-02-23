@@ -4,29 +4,29 @@ import { Link, useNavigate } from "react-router-dom";
 
 import "./Auth.css";
 
-
-function Login(props) {
+function Signup(props) {
   let navigate = useNavigate();
 
-  const [loginForm, setLoginForm] = useState({
+  const [signupForm, setSignupForm] = useState({
+    name: "",
     email: "",
     password: ""
   })
 
-  function logIn(event) {
-
+  function signUp(event) {
     event.preventDefault();
-    
+
     axios({
       method: "POST",
-      url:"/api/v1/auth/login",
+      url:"/api/v1/auth/register",
       data: {
-        email: loginForm.email,
-        password: loginForm.password
+        name: signupForm.name,
+        email: signupForm.email,
+        password: signupForm.password
       }
     })
-    .then((res) => {
-      props.setToken(res.data.access_token);
+    .then((response) => {
+      props.setToken(response.data.access_token);
     }).catch((error) => {
       if (error.response) {
         console.log(error.response);
@@ -34,51 +34,61 @@ function Login(props) {
         console.log(error.response.headers);
       }
     })
-        
-    setLoginForm(
+
+    setSignupForm(
       ({
+        name: "",
         email: "",
         password: ""
       })
     );
-      
+
     navigate("../recipes", { replace: true });
   }
 
   function handleChange(event) {
     const {value, name} = event.target;
-    setLoginForm(prevState => ({
+    setSignupForm(prevState => ({
         ...prevState, [name]: value})
   )}
 
   return (
     <div>
-      <h1>Login</h1>
-      <form className="login auth-form">
+      <h1>Sign Up</h1>
+      <form className="signup auth-form">
+        <div className="form-control">
+          <label htmlFor="name">Name</label>
+          <input onChange={handleChange}
+            type="name"
+            text={signupForm.name}
+            name="name"
+            placeholder="Name"
+            value={signupForm.name} />
+        </div>
         <div className="form-control">
           <label htmlFor="email">Email</label>
           <input onChange={handleChange}
             type="email"
-            text={loginForm.email}
+            text={signupForm.email}
             name="email"
             placeholder="Email"
-            value={loginForm.email} />
+            value={signupForm.email} />
         </div>
         <div className="form-control">
           <label htmlFor="password">Password</label>
           <input onChange={handleChange}
             type="password"
-            text={loginForm.password}
+            text={signupForm.password}
             name="password"
             placeholder="Password"
-            value={loginForm.password} />
+            value={signupForm.password} />
         </div>
         <div className="form-actions">
-          <button onClick={logIn}>Submit</button>
+          <button onClick={signUp}>Submit</button>
         </div>
         <div className="sign-up-link">
-          <Link to="/sign-up">
-            Don't have an account? Register Now
+          <Link to="/sign-in">
+            Already have an account? Login Now
           </Link>
         </div>
       </form>
@@ -86,4 +96,4 @@ function Login(props) {
   );
 }
 
-export default Login;
+export default Signup;

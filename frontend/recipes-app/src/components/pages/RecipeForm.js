@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 import "./RecipeForm.css"
 
 
-function RecipeForm() {
+function RecipeForm(props) {
     const [recipeName, setRecipeName] = useState("");
     const [recipeDescription, setRecipeDescription] = useState("");
     const [units, setUnits] = useState([]);
     const [message, setMessage] = useState("");
-
+      
     useEffect(() => {
         fetch("/api/v1/recipes/units").then(response => 
             response.json().then(data => {
@@ -96,32 +97,43 @@ function RecipeForm() {
     let submitHandler = async (e) => {
         e.preventDefault();
         try {
-            let res = await fetch("/api/v1/recipes/add", {
+            axios({
                 method: "POST",
-                body: JSON.stringify({
+                url:"/api/v1/recipes/add",
+                data: {
                     recipe_name: recipeName,
                     description: recipeDescription,
                     ingredients: ingredientList,
-                    method: methodList,
-                }),
-            });
-            // let resJson = await res.json();
-            if (res.status === 200 || res.status === 201) {
-                setRecipeName("");
-                setRecipeDescription("");
-                setIngredientList([{
-                    name: "",
-                    unit: "",
-                    quantity: ""
-                }]);
-                setMethodList([{
-                    step_no: 1,
-                    step: ""
-                }]);
-                setMessage("Recipe created successfully!");
-            } else {
-                setMessage("An error occurred.");
-            }
+                    method: methodList
+                },
+                headers: {
+                    Authorization: 'Bearer ' + props.token
+                }
+              })
+              .then((res) => {
+                if (res.status === 200 || res.status === 201) {
+                    setRecipeName("");
+                    setRecipeDescription("");
+                    setIngredientList([{
+                        name: "",
+                        unit: "",
+                        quantity: ""
+                    }]);
+                    setMethodList([{
+                        step_no: 1,
+                        step: ""
+                    }]);
+                    setMessage("Recipe created successfully!");
+                } else {
+                    setMessage("An error occurred.");
+                }
+              }).catch((error) => {
+                if (error.response) {
+                  console.log(error.response);
+                  console.log(error.response.status);
+                  console.log(error.response.headers);
+                }
+              })
         } catch (err) {
             throw new Error(err);
         }

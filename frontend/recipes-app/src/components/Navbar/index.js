@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { FaBars } from 'react-icons/fa';
 import { IconContext } from 'react-icons/lib';
 import { Nav, NavbarContainer, NavLogo, MobileIcon, NavMenu, NavItem, NavLink, NavBtn, NavBtnLink } from "./NavbarElements";
+import Logout from "../Auth/Logout";
+import useToken from "../Auth/useToken";
 
-const Navbar = ({ toggle }) => {
+
+const Navbar = ({ toggle, token }) => {
     const [scrollNav, setScrollNav] = useState(false);
 
     const changeNav = () => {
@@ -17,6 +20,8 @@ const Navbar = ({ toggle }) => {
     useEffect(() => {
         window.addEventListener("scroll", changeNav)
     }, []);
+
+    const { removeToken } = useToken();
 
     return (
         <>
@@ -34,12 +39,19 @@ const Navbar = ({ toggle }) => {
                             <NavItem>
                                 <NavLink to="create">Create</NavLink>
                             </NavItem>
-                            <NavItem>
-                                <NavLink to='sign-in'>Sign In</NavLink>
-                            </NavItem>
+                            {!token && token !== "" && token !== "undefined" && (
+                                <NavItem>
+                                    <NavLink to='sign-in'>Sign In</NavLink>
+                                </NavItem>
+                            )}
                         </NavMenu>
                         <NavBtn>
-                            <NavBtnLink to="/sign-up">Sign Up</NavBtnLink>
+                            {!token && token !== "" && token !== "undefined" && (
+                                <NavBtnLink to="/sign-up">Sign Up</NavBtnLink>
+                            )}
+                            {token && token !== "" && token !== "undefined" && (
+                                <Logout token={removeToken}/>
+                            )}
                         </NavBtn>
                     </NavbarContainer>
                 </Nav>
@@ -48,4 +60,4 @@ const Navbar = ({ toggle }) => {
     )
 }
 
-export default Navbar
+export default Navbar;
