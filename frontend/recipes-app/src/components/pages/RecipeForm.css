@@ -14,8 +14,7 @@
     flex: 2;
 }
 
-.form-field label,
-h2 {
+.form-field label {
     margin-bottom: .8em;
     padding: .1em .8em;
     border-radius: .5em;
@@ -58,7 +57,7 @@ input:focus {
     margin: 0 .5em;
 }
 
-button {
+.submit-btn {
     background: none;
     outline: none;
     cursor: pointer;

@@ -56,17 +56,15 @@ function App() {
               ></Route>
             </>
           ) : (
-            <>
-              <Route
-                path="/recipes"
-                element={<Recipes recipes={recipes} />}
-              ></Route>
-              <Route
-                path="/create"
-                element={<RecipeForm token={token} setToken={setToken}/>}
-              ></Route>
-            </>
+            <Route
+            path="/create"
+            element={<RecipeForm token={token} setToken={setToken}/>}
+            ></Route>
           )}            
+          <Route
+            path="/recipes"
+            element={<Recipes recipes={recipes} />}
+          ></Route>
         </Routes>
       </div>
     </Router>

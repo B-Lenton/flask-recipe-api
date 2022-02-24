@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-import useToken from "./useToken";
+import useToken from "../Auth/useToken";
+import "./Auth.css";
 
 function Logout(props) {
   const { removeToken } = useToken();
@@ -29,7 +30,7 @@ function Logout(props) {
 
     return(
         <div className="App-header">
-            <button onClick={logOut}>
+            <button className="logout-btn" onClick={logOut}>
                 Logout
             </button>
         </div>

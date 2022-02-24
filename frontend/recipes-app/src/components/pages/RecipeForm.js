@@ -260,7 +260,9 @@ function RecipeForm(props) {
                         </div>
                     </div>
                 ))}
-                <button type="submit">Publish Recipe</button>
+                <button type="submit" className="submit-btn">
+                    Publish Recipe
+                </button>
 
                 <div className="message">
                     {message ? <p>{message}</p> : null}

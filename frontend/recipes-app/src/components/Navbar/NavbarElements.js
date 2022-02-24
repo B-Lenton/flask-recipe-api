@@ -34,15 +34,17 @@ export const NavLogo = styled(Link)`
     color: #fff;
     justify-self: flex-start;
     cursor: pointer;
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     display: flex;
     align-items: center;
     margin-left: 24px;
     font-weight: bold;
     text-decoration: none;
+    padding: 0 1em;
 
     &:hover {
-        color: yellow;
+        color: #fff;
+        box-shadow: inset 0 -10px 0 0 #fff;
     }
 `;
 
@@ -85,9 +87,11 @@ export const NavLink = styled(Link)`
     padding: 0 1rem;
     height: 100%;
     cursor: pointer;
+    padding: 0 1em;
 
     &:hover {
-        color: yellow;
+        color: #fff;
+        box-shadow: inset 0 -10px 0 0 #fff;
     }
 `;
 

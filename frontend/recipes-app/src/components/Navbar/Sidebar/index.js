@@ -1,5 +1,5 @@
 import React from 'react';
-import Logout from '../../Auth/Logout';
+import Logout from '../../pages/Logout';
 import useToken from '../../Auth/useToken';
 
 import { 

@@ -3,3 +3,45 @@
     max-width: 80%;
     margin: 5rem auto;
 }
+
+.logout-btn {
+    background: transparent;
+    color: #fff;
+    font-size: 18px;
+    outline: none;
+    border-radius: .5em;
+    border: none;
+    padding: .3em .8em;
+    border: 3px solid #fff;
+}
+
+.logout-btn:hover,
+.logout-btn:active {
+    background: #fff;
+    color: #486582;
+    transition: all .1s ease-in-out;
+}
+
+.form-actions > button {
+    background: #486582;
+    color: #fff;
+    font-size: 1.2em;
+    outline: none;
+    border-radius: .5em;
+    border: none;
+    padding: .3em 1em;
+    margin: 1em 0;
+}
+
+.form-actions > button:hover,
+.form-actions > button:active {
+    background: #fff;
+    color: #486582;
+    border: 1px solid #486582;
+    transition: all .1s ease-in-out;
+}
+
+.sign-up-link,
+.sign-in-link {
+    /* TODO: style */
+}

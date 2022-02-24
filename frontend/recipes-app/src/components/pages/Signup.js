@@ -86,7 +86,7 @@ function Signup(props) {
         <div className="form-actions">
           <button onClick={signUp}>Submit</button>
         </div>
-        <div className="sign-up-link">
+        <div className="sign-in-link">
           <Link to="/sign-in">
             Already have an account? Login Now
           </Link>
