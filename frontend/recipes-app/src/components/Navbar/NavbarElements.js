@@ -12,7 +12,6 @@ export const Nav = styled.nav`
     position: sticky;
     top: 0;
     z-index: 10;
-    margin-bottom: 5em;
     font-size: 1.5em;
 
     @media screen and (max-width: 960px) {

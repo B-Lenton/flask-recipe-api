@@ -36,9 +36,11 @@ const Navbar = ({ toggle, token }) => {
                             <NavItem>
                                 <NavLink to="recipes">Recipes</NavLink>
                             </NavItem>
-                            <NavItem>
-                                <NavLink to="create">Create</NavLink>
-                            </NavItem>
+                            {token && token !== "" && token !== undefined && (
+                                <NavItem>
+                                    <NavLink to="create">Create</NavLink>
+                                </NavItem>
+                            )}
                             {!token && (
                                 <NavItem>
                                     <NavLink to='sign-in'>Sign In</NavLink>

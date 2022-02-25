@@ -18,21 +18,21 @@ def api_get_recipe(recipe_id):
 
 
 @blueprint_recipes.route('/add',  methods=['POST'])
-@jwt_required()
+@jwt_required(fresh=True)
 def api_add_recipe():
     recipe = request.get_json()
     return jsonify(create_recipe(recipe))
 
 
 @blueprint_recipes.route('/update/<int:recipe_id>',  methods=['PUT'])
-@jwt_required()
+@jwt_required(fresh=True)
 def api_update_recipe(recipe_id):
     recipe = request.get_json()
     return jsonify(update_recipe(recipe, recipe_id))
 
 
 @blueprint_recipes.route('/delete/<int:recipe_id>',  methods=['DELETE'])
-@jwt_required()
+@jwt_required(fresh=True)
 def api_delete_recipe(recipe_id):
     return jsonify(delete_recipe(recipe_id))
 

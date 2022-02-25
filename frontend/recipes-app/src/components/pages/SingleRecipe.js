@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { generatePath, useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import uuid from 'react-uuid';
 
 const SingleRecipe = () => {

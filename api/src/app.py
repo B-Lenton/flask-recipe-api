@@ -3,7 +3,7 @@ import json
 from flask import Flask
 from flask_cors import CORS
 from flask_jwt_extended import JWTManager
-from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity
+from flask_jwt_extended import create_access_token, get_jwt, get_jwt_identity, set_access_cookies
 from datetime import datetime, timedelta, timezone
 
 from blueprints.blueprint_recipes import blueprint_recipes
@@ -17,7 +17,7 @@ jwt = JWTManager(app)
 
 
 @app.after_request
-def refresh_expiring_jwt(response):
+def refresh_expiring_jwts(response):
     """
     Using an `after_request` callback:
     Refresh any token that is within 30 minutes of expiring.
@@ -29,12 +29,7 @@ def refresh_expiring_jwt(response):
         target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
         if target_timestamp > exp_timestamp:
             access_token = create_access_token(identity=get_jwt_identity())
-            data = response.get_json()
-            if type(data) is dict:
-                data["access_token"] = access_token
-                response.data = json.dumps(data)
-                # or try to use below instead of above line...
-                # set_access_cookies(response, access_token)
+            set_access_cookies(response, access_token)
         return response
     except (RuntimeError, KeyError):
         """

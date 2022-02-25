@@ -2,7 +2,7 @@ import sqlite3
 
 from flask import request
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_jwt_extended import create_access_token
+from flask_jwt_extended import create_access_token, create_refresh_token
 
 from db_connection import connect_to_db
 
@@ -43,8 +43,12 @@ def login_user():
 
         if email == user['email'] \
                 and check_password_hash(user['password'], password):
-            access_token = create_access_token(identity=email)
-            response = {"access_token": access_token}
+            access_token = create_access_token(identity=email, fresh=True)
+            refresh_token = create_refresh_token(identity=email)
+            response = {
+                "access_token": access_token, 
+                "refresh_token": refresh_token
+            }
             # message = {"message": "Login successful"}
             # set_access_cookies(message, access_token)
             return response

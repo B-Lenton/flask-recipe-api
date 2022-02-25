@@ -8,6 +8,7 @@
     margin: 1rem auto;
     display: flex;
     justify-content: space-between;
+    margin-top: 80px;
 }
 
 .form-field {

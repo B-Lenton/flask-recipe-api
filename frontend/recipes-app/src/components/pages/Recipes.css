@@ -41,15 +41,16 @@ html {
     color: #aaa;
 }
 
-.card-container {
+.recipe-card-container {
     display: flex;
     justify-content: space-evenly;
     padding: 3em;
     flex-wrap: wrap;
     flex-direction: row;
+    margin-top: 80px;
 }
 
-.card-item {
+.recipe-card-item {
     background-color: #fff;
     padding: 30px;
     box-shadow: 0 0 5px rgba(75, 75, 75, .07);
@@ -60,15 +61,15 @@ html {
     text-decoration: none;
 }
 
-.card-item:hover,
-.card-item:active,
-.card-item:focus {
+.recipe-card-item:hover,
+.recipe-card-item:active,
+.recipe-card-item:focus {
     transform: scale(1.05);
     background-color: rgba(72, 101, 130, 0.068);
     border-radius: 1em;
 }
 
-.card {
+.recipe-card {
     position: relative;
     display: flex;
     flex-direction: row-reverse;
@@ -78,18 +79,19 @@ html {
     background-clip: border-box;
     border: 1px solid rgba(0,0,0,.125);
     border-radius: .25rem;
+    justify-content: start;
 }
 
-.card-body {
+.recipe-card-body {
     float: left;
     width: 50%;
 }
 
-.card-number {
+.recipe-card-number {
     margin-top: 15px;
 }
 
-.card-circle {
+.recipe-card-circle {
     border: 1px solid #aaa;
     border-radius: 50%;
     display: inline-block;
@@ -100,7 +102,7 @@ html {
     width: 25px;
 }
 
-.card-author {
+.recipe-card-author {
     display: block;
     font-size: 1em;
     letter-spacing: .5px;
@@ -108,13 +110,13 @@ html {
     text-transform: uppercase;
 }
 
-.card-author:hover,
-.card-author:active {
+.recipe-card-author:hover,
+.recipe-card-author:active {
     color: rgba(0, 0, 0, 0.795);
     font-weight: 500;
 }
 
-.card-title {
+.recipe-card-title {
     line-height: 60px;
     margin: 10px 0;
     color: #486582;
@@ -122,15 +124,15 @@ html {
     text-decoration: none;
 }
 
-.card-description {
+.recipe-card-description {
     float: left;
     font-weight: 300;
     line-height: 22px;
-    margin: 10px 0;
+    margin: 10px 10px;
     font-size: 1.2em;
 }
 
-.card-read {
+.recipe-card-read {
     background: #486582;
     color: #fff;
     font-size: 1em;
@@ -139,13 +141,13 @@ html {
     border-radius: .5em;
     border: none;
     padding: .5em 1em;
-    margin: 5px 0 20px;
+    margin: 5px 5px 20px 0;
     text-transform: uppercase;
     float: right;
 }
 
-.card-read:hover,
-.card-read:active {
+.recipe-card-read:hover,
+.recipe-card-read:active {
     background: #fff;
     color: #000;
     box-shadow: 1px 1px 3px 2px rgba(0, 0, 0, 0.5);
@@ -153,12 +155,12 @@ html {
     transition: all .1s ease-in-out;
 }
 
-.card-media {
+.recipe-card-media {
     float: right;
     width: fit-content;
 }
 
-.card-shadow {
+.recipe-card-shadow {
     background-color: #fff;
     box-shadow: 0 2px 25px 2px rgba(0, 0, 0, 1), 0 2px 50px 2px rgba(0, 0, 0, 1), 0 0 100px 3px rgba(0, 0, 0, .25);
     height: 1px;
@@ -169,19 +171,19 @@ html {
 }
 
 @media (max-width: 640px) {
-    .card {
+    .recipe-card {
         flex-direction: column-reverse;
         align-items: center;
     }
-    .card-body {
+    .recipe-card-body {
         float: none;
         width: 100%;
     }
-    .card-author {
+    .recipe-card-author {
         display: initial;
         margin-left: 1em;
     }
-    .card-media {
+    .recipe-card-media {
         padding-top: 1em;
     }
 }

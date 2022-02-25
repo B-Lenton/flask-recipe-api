@@ -30,12 +30,14 @@ const Sidebar = ({ isOpen, toggle, token }) => {
           >
             Recipes
           </SidebarLink>
-          <SidebarLink 
-            to="create" 
-            onClick={toggle}
-          >
-            Create
-          </SidebarLink>
+          {token && token !== "" && token !== undefined && (
+            <SidebarLink 
+              to="create" 
+              onClick={toggle}
+            >
+              Create
+            </SidebarLink>
+          )}
           {!token && (
             <SidebarLink 
               to="sign-in" 

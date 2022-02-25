@@ -19,7 +19,10 @@ import Navbar from "./components/Navbar/index";
 import Sidebar from "./components/Navbar/Sidebar";
 import useToken from "./components/Auth/useToken";
 import SingleRecipe from "./components/pages/SingleRecipe";
+import HomePage from "./components/pages/HomePage";
 
+// TODO: Original token remains in local storage after refresh on the backend
+// Need to set a timeout to check for new token on frontend maybe?
 
 function App() {
 
@@ -48,45 +51,42 @@ function App() {
             <Navbar toggle={toggle} token={token} />
         )}
         <Routes>
-          {/* {!token && token !== "" && token !== undefined ? ( */}
-            <>
-              <Route
-                path="/sign-in"
-                element={
-                  <PublicRoute>
-                    <Login setToken={setToken} />
-                  </PublicRoute>
-                }
-              ></Route>
-              <Route
-                path="/sign-up"
-                element={
-                  <PublicRoute>
-                    <Signup setToken={setToken} />
-                  </PublicRoute>
-                }
-              ></Route>
-            </>
-          {/* ) : ( */}
-            <Route
-              path="/create"
-              element={
-                <PrivateRoute>
-                  <RecipeForm token={token} setToken={setToken}/>
-                </PrivateRoute>
-              }
-            ></Route>
-            <Route
-              path="recipes/:id"
-              element={
-                <PrivateRoute>
-                  <SingleRecipe />
-                </PrivateRoute>
-              }
-            >
-
-            </Route>
-          {/* )}             */}
+          <Route
+            path="/"
+            element={<HomePage />}
+          ></Route>
+          <Route
+            path="/sign-in"
+            element={
+              <PublicRoute>
+                <Login setToken={setToken} />
+              </PublicRoute>
+            }
+          ></Route>
+          <Route
+            path="/sign-up"
+            element={
+              <PublicRoute>
+                <Signup setToken={setToken} />
+              </PublicRoute>
+            }
+          ></Route>
+          <Route
+            path="/create"
+            element={
+              <PrivateRoute>
+                <RecipeForm token={token} setToken={setToken}/>
+              </PrivateRoute>
+            }
+          ></Route>
+          <Route
+            path="recipes/:id"
+            element={
+              <PrivateRoute>
+                <SingleRecipe />
+              </PrivateRoute>
+            }
+          ></Route>
           <Route
             path="/recipes"
             element={<Recipes recipes={recipes} />}
