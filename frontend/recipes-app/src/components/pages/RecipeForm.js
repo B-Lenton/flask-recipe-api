@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import "./RecipeForm.css"
 
 
 function RecipeForm(props) {
+    const navigate = useNavigate();
     const [recipeName, setRecipeName] = useState("");
     const [recipeDescription, setRecipeDescription] = useState("");
     const [units, setUnits] = useState([]);
@@ -112,18 +114,8 @@ function RecipeForm(props) {
               })
               .then((res) => {
                 if (res.status === 200 || res.status === 201) {
-                    setRecipeName("");
-                    setRecipeDescription("");
-                    setIngredientList([{
-                        name: "",
-                        unit: "",
-                        quantity: ""
-                    }]);
-                    setMethodList([{
-                        step_no: 1,
-                        step: ""
-                    }]);
-                    setMessage("Recipe created successfully!");
+                    navigate("../recipes", { replace: true });
+                    window.location.reload();
                 } else {
                     setMessage("An error occurred.");
                 }

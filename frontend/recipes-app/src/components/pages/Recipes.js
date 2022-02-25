@@ -7,11 +7,11 @@ export const Recipes = ({ recipes }) => {
     <section className="card-container">
         { recipes.map(recipe => {
           return (
-            <a href={"#"} key={recipe.recipe_id} className="card-item">
+            <a href={`/recipes/${recipe.recipe_id}`} key={recipe.recipe_id} className="card-item">
               <div className="card u-clearfix">
                 <div className="card-body">
                   <span className="card-number card-circle subtle">{recipe.recipe_id}</span>
-                  <a href={"#"} className="card-author subtle">{recipe.creator}</a>
+                  <span className="card-author subtle">{recipe.creator}</span>
                   <h2 className="card-title">
                     {recipe.recipe_name}
                   </h2>

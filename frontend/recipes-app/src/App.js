@@ -18,6 +18,7 @@ import Signup from "./components/pages/Signup";
 import Navbar from "./components/Navbar/index";
 import Sidebar from "./components/Navbar/Sidebar";
 import useToken from "./components/Auth/useToken";
+import SingleRecipe from "./components/pages/SingleRecipe";
 
 
 function App() {
@@ -75,6 +76,16 @@ function App() {
                 </PrivateRoute>
               }
             ></Route>
+            <Route
+              path="recipes/:id"
+              element={
+                <PrivateRoute>
+                  <SingleRecipe />
+                </PrivateRoute>
+              }
+            >
+
+            </Route>
           {/* )}             */}
           <Route
             path="/recipes"

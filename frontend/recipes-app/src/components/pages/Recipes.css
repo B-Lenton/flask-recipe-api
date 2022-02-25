@@ -71,7 +71,7 @@ html {
 .card {
     position: relative;
     display: flex;
-    flex-direction: row;
+    flex-direction: row-reverse;
     min-width: 0;
     word-wrap: break-word;
     background-color: #fff;
@@ -170,7 +170,7 @@ html {
 
 @media (max-width: 640px) {
     .card {
-        flex-direction: column;
+        flex-direction: column-reverse;
         align-items: center;
     }
     .card-body {
@@ -182,6 +182,6 @@ html {
         margin-left: 1em;
     }
     .card-media {
-        padding-bottom: 1em;
+        padding-top: 1em;
     }
 }
