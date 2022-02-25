@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
+  Navigate,
   Route,
   Routes
 } from "react-router-dom";
@@ -8,6 +9,8 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './App.css';
+import PrivateRoute from "./components/Auth/PrivateRoute";
+import PublicRoute from "./components/Auth/PublicRoute";
 import RecipeForm from "./components//pages/RecipeForm";
 import { Recipes } from "./components/pages/Recipes";
 import Login from "./components/pages/Login";
@@ -44,23 +47,35 @@ function App() {
             <Navbar toggle={toggle} token={token} />
         )}
         <Routes>
-          {!token && token !== "" && token !== undefined ? (
+          {/* {!token && token !== "" && token !== undefined ? ( */}
             <>
               <Route
                 path="/sign-in"
-                element={<Login setToken={setToken} />}
+                element={
+                  <PublicRoute>
+                    <Login setToken={setToken} />
+                  </PublicRoute>
+                }
               ></Route>
               <Route
                 path="/sign-up"
-                element={<Signup setToken={setToken} />}
+                element={
+                  <PublicRoute>
+                    <Signup setToken={setToken} />
+                  </PublicRoute>
+                }
               ></Route>
             </>
-          ) : (
+          {/* ) : ( */}
             <Route
-            path="/create"
-            element={<RecipeForm token={token} setToken={setToken}/>}
+              path="/create"
+              element={
+                <PrivateRoute>
+                  <RecipeForm token={token} setToken={setToken}/>
+                </PrivateRoute>
+              }
             ></Route>
-          )}            
+          {/* )}             */}
           <Route
             path="/recipes"
             element={<Recipes recipes={recipes} />}
