@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const parseJwt = (token) => {
   try {
@@ -8,15 +8,22 @@ const parseJwt = (token) => {
   }
 };
 
-export function AuthVerify(jwt) {
-    const decodedJwt = parseJwt(jwt);
-    if (decodedJwt.exp * 1000 < Date.now()) {
-      console.log("expired!")
-      return "expired";
-      // navigate("../logout", { replace: true})
-      // navigate("../login", { replace: true})
+export async function AuthVerify(jwt, refreshToken) {
+ 
+  const decodedJwt = parseJwt(jwt);
+
+  if (decodedJwt.exp * 1000 < Date.now()) {
+    let response = await axios({
+      method: "POST",
+      url:"/api/v1/auth/refresh",
+      headers: {
+        Authorization: 'Bearer ' + refreshToken
+      }
+    });
+    let res = new Object();
+    res.token = response.data.access_token;
+    return res;
   } else {
     console.log("not expired!");
   }
-  return null;
 };

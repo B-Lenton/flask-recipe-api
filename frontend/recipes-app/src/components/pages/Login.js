@@ -27,6 +27,7 @@ function Login(props) {
     })
     .then((res) => {
       props.setToken(res.data.access_token);
+      props.setRefreshToken(res.data.refresh_token);
     }).catch((error) => {
       if (error.response) {
         console.log(error.response);

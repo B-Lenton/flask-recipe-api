@@ -36,7 +36,7 @@ function App() {
     );
   }, []);
 
-  const { token, setToken, removeToken } = useToken();
+  const { token, setToken, removeToken, setRefreshToken, refreshToken } = useToken();
   const [recipes, setRecipes] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -61,7 +61,7 @@ function App() {
             path="/sign-in"
             element={
               <PublicRoute>
-                <Login setToken={setToken} />
+                <Login setToken={setToken} setRefreshToken={setRefreshToken} />
               </PublicRoute>
             }
           ></Route>
@@ -69,7 +69,7 @@ function App() {
             path="/sign-up"
             element={
               <PublicRoute>
-                <Signup setToken={setToken} />
+                <Signup setToken={setToken} setRefreshToken={setRefreshToken} />
               </PublicRoute>
             }
           ></Route>
@@ -77,7 +77,7 @@ function App() {
             path="/create"
             element={
               <PrivateRoute>
-                <RecipeForm token={token} setToken={setToken} logout={removeToken}/>
+                <RecipeForm token={token} setToken={setToken} refreshToken={refreshToken} />
               </PrivateRoute>
             }
           ></Route>

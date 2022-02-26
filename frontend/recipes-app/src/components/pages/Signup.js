@@ -27,6 +27,7 @@ function Signup(props) {
     })
     .then((response) => {
       props.setToken(response.data.access_token);
+      props.setRefreshToken(response.data.refresh_token);
     }).catch((error) => {
       if (error.response) {
         console.log(error.response);

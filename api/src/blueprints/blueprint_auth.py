@@ -28,5 +28,5 @@ def api_user_logout():
 @jwt_required(refresh=True)
 def refresh():
     identity = get_jwt_identity()
-    access_token = create_access_token(identity=identity, fresh=False)
+    access_token = create_access_token(identity=identity, fresh=True)
     return jsonify(access_token=access_token)

@@ -96,48 +96,57 @@ function RecipeForm(props) {
         setMethodList(list);
     };
 
-    let submitHandler = async (e) => {
+    let submitHandler = (e) => {
         e.preventDefault();
         try {
-						if (AuthVerify(props.token) == "expired") {
-							setMessage("Authentication expired. Save progress and sign in?");
-							// TODO: Create separate function for: 
-							// - handling option to sign in
-							// - saving progress in local storage.
-							props.logout();
-							navigate("../sign-in", { replace: true })
-						}
-            axios({
-                method: "POST",
-                url:"/api/v1/recipes/add",
-                data: {
-                    recipe_name: recipeName,
-                    description: recipeDescription,
-                    ingredients: ingredientList,
-                    method: methodList
-                },
-                headers: {
-                    Authorization: 'Bearer ' + props.token
-                }
-              })
-              .then((res) => {
-                if (res.status === 200 || res.status === 201) {
-                    navigate("../recipes", { replace: true });
-                    window.location.reload();
-                } else {
-                    setMessage("An error occurred.");
-                }
-              }).catch((error) => {
-                if (error.response.data.msg === "Token has expired") {
-                  setMessage("Authentication failed");
-									if (AuthVerify(props.token) == "expired") {
-										props.logout();
-										navigate("../sign-in", { replace: true })
-									}
-                }
-              })
+						AuthVerify(props.token, props.refreshToken)
+							.then(res => {
+								console.log(res);
+								if (res !== undefined && res.token) {
+									props.setToken(res.token);
+									return res.token;
+									// setMessage("Authentication expired. Save progress and sign in?");
+									// TODO: Create separate function for: 
+									// - handling option to sign in
+									// - saving progress in local storage.
+									// props.logout();
+									// navigate("../sign-in", { replace: true })
+								}
+							})
+							.then((refreshedToken) => {
+								try {
+									console.log(JSON.parse(atob(props.token.split(".")[1])));
+									console.log(JSON.parse(atob(refreshedToken.split(".")[1])));
+								} catch (err) {
+									console.log(err);
+								}
+								axios({
+										method: "POST",
+										url:"/api/v1/recipes/add",
+										data: {
+												recipe_name: recipeName,
+												description: recipeDescription,
+												ingredients: ingredientList,
+												method: methodList
+										},
+										headers: {
+												Authorization: 'Bearer ' + refreshedToken ? refreshedToken : props.token
+										}
+									})
+									.then((res) => {
+										if (res.status === 200 || res.status === 201) {
+												navigate("../recipes", { replace: true });
+												window.location.reload();
+										} else {
+												setMessage("An error occurred.");
+										}
+									}).catch((error) => {
+										// TODO: Why is authorization failing every time?
+										console.log(error); 
+									})
+							})
         } catch (err) {
-            throw new Error(err);
+            console.log(err);
         }
     };
 
