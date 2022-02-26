@@ -20,6 +20,8 @@ import Sidebar from "./components/Navbar/Sidebar";
 import useToken from "./components/Auth/useToken";
 import SingleRecipe from "./components/pages/SingleRecipe";
 import HomePage from "./components/pages/HomePage";
+import AuthVerify from "./components/Auth/AuthVerify";
+import Logout from "./components/pages/Logout";
 
 // TODO: Original token remains in local storage after refresh on the backend
 // Need to set a timeout to check for new token on frontend maybe?
@@ -34,7 +36,7 @@ function App() {
     );
   }, []);
 
-  const { token, setToken } = useToken();
+  const { token, setToken, removeToken } = useToken();
   const [recipes, setRecipes] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -75,7 +77,7 @@ function App() {
             path="/create"
             element={
               <PrivateRoute>
-                <RecipeForm token={token} setToken={setToken}/>
+                <RecipeForm token={token} setToken={setToken} logout={removeToken}/>
               </PrivateRoute>
             }
           ></Route>

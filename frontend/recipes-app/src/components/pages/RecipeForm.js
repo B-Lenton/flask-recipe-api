@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import "./RecipeForm.css"
-
+import { AuthVerify } from "../Auth/AuthVerify";
 
 function RecipeForm(props) {
     const navigate = useNavigate();
@@ -99,6 +99,14 @@ function RecipeForm(props) {
     let submitHandler = async (e) => {
         e.preventDefault();
         try {
+						if (AuthVerify(props.token) == "expired") {
+							setMessage("Authentication expired. Save progress and sign in?");
+							// TODO: Create separate function for: 
+							// - handling option to sign in
+							// - saving progress in local storage.
+							props.logout();
+							navigate("../sign-in", { replace: true })
+						}
             axios({
                 method: "POST",
                 url:"/api/v1/recipes/add",
@@ -120,10 +128,12 @@ function RecipeForm(props) {
                     setMessage("An error occurred.");
                 }
               }).catch((error) => {
-                if (error.response) {
-                  console.log(error.response);
-                  console.log(error.response.status);
-                  console.log(error.response.headers);
+                if (error.response.data.msg === "Token has expired") {
+                  setMessage("Authentication failed");
+									if (AuthVerify(props.token) == "expired") {
+										props.logout();
+										navigate("../sign-in", { replace: true })
+									}
                 }
               })
         } catch (err) {
