@@ -3,10 +3,11 @@ import { Navigate, useLocation } from "react-router-dom";
 
 import useToken from "./useToken";
 
+
 const PrivateRoute = (props) => {
   const { token } = useToken();
-  const { children } = props
-  const location = useLocation()
+  const { children } = props;
+  const location = useLocation();
   
   return token && token !== "" && token !== undefined && token !== null ? (
     <>{children}</>

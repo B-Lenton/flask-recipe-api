@@ -2,15 +2,17 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-import "./RecipeForm.css"
-import { AuthVerify } from "../Auth/AuthVerify";
+import "./RecipeForm.css";
+import { CheckTokenExpiry, RefreshToken } from "../Auth/AuthVerify";
+import useToken from "../Auth/useToken";
 
-function RecipeForm(props) {
+function RecipeForm() {
     const navigate = useNavigate();
     const [recipeName, setRecipeName] = useState("");
     const [recipeDescription, setRecipeDescription] = useState("");
     const [units, setUnits] = useState([]);
     const [message, setMessage] = useState("");
+    const { setToken, token, refreshToken } = useToken();
       
     useEffect(() => {
         fetch("/api/v1/recipes/units").then(response => 
@@ -96,57 +98,48 @@ function RecipeForm(props) {
         setMethodList(list);
     };
 
+    let checkToken = async () => {
+      if (CheckTokenExpiry(token)) {
+        let refresh = await RefreshToken(refreshToken);
+        setToken(refresh.token);
+        return refresh.token;
+      };
+    };
+
     let submitHandler = (e) => {
         e.preventDefault();
         try {
-						AuthVerify(props.token, props.refreshToken)
-							.then(res => {
-								console.log(res);
-								if (res !== undefined && res.token) {
-									props.setToken(res.token);
-									return res.token;
-									// setMessage("Authentication expired. Save progress and sign in?");
-									// TODO: Create separate function for: 
-									// - handling option to sign in
-									// - saving progress in local storage.
-									// props.logout();
-									// navigate("../sign-in", { replace: true })
-								}
-							})
-							.then((refreshedToken) => {
-								try {
-									console.log(JSON.parse(atob(props.token.split(".")[1])));
-									console.log(JSON.parse(atob(refreshedToken.split(".")[1])));
-								} catch (err) {
-									console.log(err);
-								}
-								axios({
-										method: "POST",
-										url:"/api/v1/recipes/add",
-										data: {
-												recipe_name: recipeName,
-												description: recipeDescription,
-												ingredients: ingredientList,
-												method: methodList
-										},
-										headers: {
-												Authorization: 'Bearer ' + refreshedToken ? refreshedToken : props.token
-										}
-									})
-									.then((res) => {
-										if (res.status === 200 || res.status === 201) {
-												navigate("../recipes", { replace: true });
-												window.location.reload();
-										} else {
-												setMessage("An error occurred.");
-										}
-									}).catch((error) => {
-										// TODO: Why is authorization failing every time?
-										console.log(error); 
-									})
-							})
+          checkToken().then((refreshedToken) => {
+            let jwt;
+            if (refreshedToken) {
+              jwt = refreshedToken;
+            } else {
+              jwt = token;
+            };
+            axios({
+              method: "POST",
+              url:"/api/v1/recipes/add",
+              data: {
+                recipe_name: recipeName,
+                description: recipeDescription,
+                ingredients: ingredientList,
+                method: methodList
+              },
+              headers: {
+                Authorization: 'Bearer ' + jwt
+              }
+            })
+            .then(res => {
+              if (res.status === 200 || res.status === 201) {
+                navigate("../recipes", { replace: true });
+                window.location.reload();
+              } else {
+                setMessage("An error occurred.");
+              }
+            })
+          })
         } catch (err) {
-            console.log(err);
+          console.log(err);
         }
     };
 

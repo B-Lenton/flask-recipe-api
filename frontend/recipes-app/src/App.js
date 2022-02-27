@@ -1,12 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
-  Navigate,
   Route,
   Routes
 } from "react-router-dom";
-
-import 'bootstrap/dist/css/bootstrap.min.css';
 
 import './App.css';
 import PrivateRoute from "./components/Auth/PrivateRoute";
@@ -20,11 +17,7 @@ import Sidebar from "./components/Navbar/Sidebar";
 import useToken from "./components/Auth/useToken";
 import SingleRecipe from "./components/pages/SingleRecipe";
 import HomePage from "./components/pages/HomePage";
-import AuthVerify from "./components/Auth/AuthVerify";
-import Logout from "./components/pages/Logout";
 
-// TODO: Original token remains in local storage after refresh on the backend
-// Need to set a timeout to check for new token on frontend maybe?
 
 function App() {
 
@@ -36,7 +29,7 @@ function App() {
     );
   }, []);
 
-  const { token, setToken, removeToken, setRefreshToken, refreshToken } = useToken();
+  const { token, setToken, setRefreshToken } = useToken();
   const [recipes, setRecipes] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -77,7 +70,7 @@ function App() {
             path="/create"
             element={
               <PrivateRoute>
-                <RecipeForm token={token} setToken={setToken} refreshToken={refreshToken} />
+                <RecipeForm />
               </PrivateRoute>
             }
           ></Route>

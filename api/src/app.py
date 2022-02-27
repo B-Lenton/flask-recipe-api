@@ -16,27 +16,29 @@ CORS(app, resources={r"/*": {"origins": "*"}})
 jwt = JWTManager(app)
 
 
-@app.after_request
-def refresh_expiring_jwts(response):
-    """
-    Using an `after_request` callback:
-    Refresh any token that is within 30 minutes of expiring.
-    Takes the response of the protected endpoint as an argument.
-    """
-    try:
-        exp_timestamp = get_jwt()["exp"]
-        now = datetime.now(timezone.utc)
-        target_timestamp = datetime.timestamp(now + timedelta(minutes=30))
-        if target_timestamp > exp_timestamp:
-            access_token = create_access_token(identity=get_jwt_identity())
-            set_access_cookies(response, access_token)
-        return response
-    except (RuntimeError, KeyError):
-        """
-        Case where there is not a valid JWT. 
-        Just return the original response.
-        """
-        return response
+# @app.after_request
+# def refresh_expiring_jwts(response):
+#     """
+#     Using an `after_request` callback:
+#     Refresh any token that is within 30 minutes of expiring.
+#     Takes the response of the protected endpoint as an argument.
+#     """
+#     try:
+#         exp_timestamp = get_jwt()["exp"]
+#         now = datetime.now(timezone.utc)
+#         target_timestamp = datetime.timestamp(now + timedelta(seconds=30))
+#         if target_timestamp > exp_timestamp:
+#             access_token = create_access_token(identity=get_jwt_identity())
+#             print(response)
+#             print(access_token)
+#             set_access_cookies(response, access_token)
+#         return response
+#     except (RuntimeError, KeyError):
+#         """
+#         Case where there is not a valid JWT. 
+#         Just return the original response.
+#         """
+#         return response
 
 
 app.register_blueprint(blueprint_recipes, url_prefix="/api/v1/recipes")

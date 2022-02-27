@@ -14,11 +14,6 @@ function useToken() {
     setToken(userToken);
   };
   
-  function removeToken() {
-    localStorage.removeItem("token");
-    setToken(null);
-  };
-
   function getRefreshToken() {
     const userRefreshToken = localStorage.getItem('refresh_token');
     return userRefreshToken && userRefreshToken;
@@ -29,6 +24,13 @@ function useToken() {
   function saveRefreshToken(userRefreshToken) {
     localStorage.setItem('refresh_token', userRefreshToken);
     setRefreshToken(userRefreshToken);
+  };
+
+  function removeToken() {
+    localStorage.removeItem("token");
+    localStorage.removeItem("refresh_token");
+    setToken(null);
+    setRefreshToken(null);
   };
 
   return {

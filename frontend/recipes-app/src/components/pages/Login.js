@@ -31,8 +31,6 @@ function Login(props) {
     }).catch((error) => {
       if (error.response) {
         console.log(error.response);
-        console.log(error.response.status);
-        console.log(error.response.headers);
       }
     })
         
