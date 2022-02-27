@@ -3,9 +3,6 @@
 
 
 /*---ELEMENTS---*/
-.active {
-	background: lightgray;
-}
 .section-name {
 	display: block;
 	width: 100%;
@@ -24,11 +21,26 @@
     min-height: 30em;
     max-height: 40em;
 	display: block;
-	background-image: url(https://static.pexels.com/photos/76093/pexels-photo-76093.jpeg);
+	background-image: url(https://source.unsplash.com/collection/3775871);
 	background-position: top;
 	background-size: cover;
-	background-attachment: fixed;
+	background-attachment: scroll;
 	background-repeat: no-repeat;
+	-webkit-clip-path: ellipse(100% 100% at 50% 0%);
+	clip-path: ellipse(100% 100% at 50% 0%);
+}
+.overlay {
+	margin-top: 0;
+	width: auto;
+	background: #00000057;
+	height: calc(50vh + 12em);
+	top: -15px;
+	position: relative;
+	padding: 1em 0;
+	height: 50vh;
+    min-height: 30em;
+    max-height: 40em;
+	display: block;
 	-webkit-clip-path: ellipse(100% 100% at 50% 0%);
 	clip-path: ellipse(100% 100% at 50% 0%);
 }
@@ -54,6 +66,7 @@
 	display: flex;
 	flex-direction: row;
 	justify-content: space-between;
+	align-items: center;
 }
 .search legend {
 	display: none;
@@ -66,7 +79,7 @@
 }
 .search label input {
 	width: 100%;
-	padding: 8px;
+	padding: 0.5em;
 	outline: none;
 	border-radius: 5px;
 	border: 1px solid rgb(220, 220, 220);
@@ -74,13 +87,27 @@
 .search label input:focus {
 	border: 1px solid rgba(72, 101, 130, 0.5);
 }
-.search button {
+.search .find-btn {
 	flex-basis: 15%;
 	background-color: #486582;
 	color: white;
 	text-transform: uppercase;
-	border: 0;
 	cursor: pointer;
+	height: fit-content;
+	padding: 0.5em 0.7em;
+	border-radius: 6px;
+	cursor: pointer;
+	font-family: 'Dosis', sans-serif;
+	font-weight: 700;
+	font-size: 1.1rem;
+	letter-spacing: 1px;
+	border: 2px solid #fff;
+}
+.search .find-btn:hover {
+	transition: all 0.1s ease-in;
+	color: #486582;
+	background: #fff;
+	border: 2px solid #486582;
 }
 .product {
 	margin: 2em auto;
@@ -129,13 +156,18 @@
 	text-decoration: none;
 }
 
+.box {
+	background-color: rgba(72, 101, 130, 0.15);
+	border-top-left-radius: 1em;
+	border-top-right-radius: 1em;
+}
+
 .card img {
-	margin-top: 1em;
+	margin: 1em auto;
 	max-width: 100%;
 	max-height: 200px;
 	width: auto;
-	border-top-left-radius: 1em;
-	border-top-right-radius: 1em;
+	border-radius: 1em;
 }
 
 header.card-content {
@@ -177,30 +209,6 @@ footer.card-content {
 .contributor {
 	display: block;
 }
-
-/*---BUTTON---*/
-.find-btn {
-	padding: 0.5em 0.7em;
-	border-radius: 6px;
-	border: 0;
-	cursor: pointer;
-	font-family: 'Dosis', sans-serif;
-	font-weight: 700;
-	font-size: 1.1rem;
-	letter-spacing: 1px;
-	transition: all 0.1s ease-in;
-}
-.find-btn:hover {
-	opacity: 0.5;
-}
-.login {
-	background-color: darksalmon;
-	color: white;
-}
-.register {
-	background-color: darkgrey;
-}
-
 
 /*---MOBILE SCREEN---*/
 @media screen and (max-width : 22em) {
