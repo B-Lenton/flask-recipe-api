@@ -22,7 +22,7 @@
     max-height: 40em;
 	display: block;
 	background-image: url(https://source.unsplash.com/collection/3775871);
-	background-position: top;
+	background-position: center;
 	background-size: cover;
 	background-attachment: scroll;
 	background-repeat: no-repeat;
@@ -90,24 +90,23 @@
 .search .find-btn {
 	flex-basis: 15%;
 	background-color: #486582;
-	color: white;
-	text-transform: uppercase;
 	cursor: pointer;
 	height: fit-content;
-	padding: 0.5em 0.7em;
+	padding: 0.5em 0;
 	border-radius: 6px;
-	cursor: pointer;
 	font-family: 'Dosis', sans-serif;
 	font-weight: 700;
 	font-size: 1.1rem;
-	letter-spacing: 1px;
 	border: 2px solid #fff;
+	color: white;
+	text-transform: uppercase;
+	letter-spacing: 1px;
 }
 .search .find-btn:hover {
 	transition: all 0.1s ease-in;
-	color: #486582;
 	background: #fff;
 	border: 2px solid #486582;
+	color: #486582;
 }
 .product {
 	margin: 2em auto;

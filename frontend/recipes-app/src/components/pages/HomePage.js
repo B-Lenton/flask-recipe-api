@@ -1,6 +1,7 @@
 // Credit: https://codepen.io/virsagomk2/pen/EvWRJm
 
 import React, { useState } from 'react';
+import { Button, animateScroll as scroll, Link } from "react-scroll";
 
 import "./HomePage.css";
 
@@ -35,31 +36,28 @@ const HomePage = ({ recipes }) => {
   }
 
   const Suggestions = () => {
-    return (
-        suggestions.map((suggestion) => {
-          return (
-            suggestion ? (
-              <article className="card" key={suggestion.recipe_id}>
-                <a href={`/recipes/${suggestion.recipe_id}`}>
-                  <div className="box"><img src="https://s15.postimg.cc/temvv7u4r/recipe.jpg" /></div>
-                  <header className="card-content">
-                    <span className="card-header">{suggestion.recipe_name}</span>
-                    <span className="card-desc">{suggestion.description}</span>
-                  </header>
-                  <footer className="card-content">
-                    <div className="contributor">
-                      <span className="contributor-name">by {suggestion.creator}</span>
-                    </div>
-                    <div className="bookmark"></div>
-                  </footer>
-                </a>
-              </article>
-            ) : (
-              // TODO: Returning no results found isn't working
-              <p>No results found.</p>
-            )
-          );
-        })
+    return suggestions.length > 0 ? (
+      suggestions.map((suggestion) => {
+        return (
+          <article className="card" key={suggestion.recipe_id}>
+            <a href={`/recipes/${suggestion.recipe_id}`}>
+              <div className="box"><img src="https://s15.postimg.cc/temvv7u4r/recipe.jpg" /></div>
+              <header className="card-content">
+                <span className="card-header">{suggestion.recipe_name}</span>
+                <span className="card-desc">{suggestion.description}</span>
+              </header>
+              <footer className="card-content">
+                <div className="contributor">
+                  <span className="contributor-name">by {suggestion.creator}</span>
+                </div>
+                <div className="bookmark"></div>
+              </footer>
+            </a>
+          </article>
+        );
+      })
+    ) : (
+      <p>No results found...</p>
     );
   };
 
@@ -72,22 +70,41 @@ const HomePage = ({ recipes }) => {
             <section role="search">
               <form autoComplete='on' name='search-form' onSubmit={handleSubmit}>
                 <fieldset className="search">
-                  <legend>Search this website:</legend>
+                  <legend>Search for recipes:</legend>
                   <label htmlFor="s">
-                    <input type="search" value={value} name="s" id="s" placeholder="Find a recipe..." maxLength="200" onChange={handleSearchInput}/>
+                    <input 
+                      type="search" 
+                      value={value} 
+                      name="s" id="s" 
+                      placeholder="Find a recipe..." 
+                      maxLength="200" 
+                      onChange={handleSearchInput}
+                    />
                   </label>
-                  <button className='find-btn' label="FIND" type="submit" title="Search recipes">
+                  <Link 
+                    className='find-btn' 
+                    label="FIND" 
+                    type="submit" 
+                    title="Search recipes"
+                    value="find"
+                    smooth={true}
+                    spy={true}
+                    to="recipes"
+                    isDynamic={true}
+                  >
                     FIND
-                  </button>
+                  </Link>
                 </fieldset>
               </form>
             </section>
           </div>
         </section>
 
-        <section className="wrapper product">
+        <section id="recipes" className="wrapper product">
           <h2 className="section-name">
-            {value.length > 1 ? "Searching for: " + `"${value}"` : "Recent Recipes"}
+            {value.length > 1 ? (
+              `Results for '${value}'`
+            ) : "Recent Recipes"}
           </h2>
           {suggestionsActive ? <Suggestions /> : (
             recipes.slice(recipes.length > 20 ? recipes.length - 10 : 0)
