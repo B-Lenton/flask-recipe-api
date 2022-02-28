@@ -6,6 +6,9 @@ import "./RecipeForm.css";
 import { CheckTokenExpiry, RefreshToken } from "../Auth/AuthVerify";
 import useToken from "../Auth/useToken";
 
+// TODO: Add option to upload image (input type="file" etc)...
+// https://dev.to/cole_ruche/placeholder-2chb
+
 function RecipeForm() {
     const navigate = useNavigate();
     const [recipeName, setRecipeName] = useState("");
@@ -144,6 +147,7 @@ function RecipeForm() {
     };
 
     return (
+        // TODO: Make semantically correct and style!
         <form className="recipe-form"
         onSubmit={submitHandler}
         >

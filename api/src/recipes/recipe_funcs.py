@@ -5,7 +5,8 @@ from flask_jwt_extended import get_jwt_identity
 
 from db_connection import connect_to_db
 
-
+# TODO: Add option to upload image to db...
+# https://pynative.com/python-sqlite-blob-insert-and-retrieve-digital-data/
 def create_recipe(recipe):
     """
     Expected data (object) for creating recipes:
