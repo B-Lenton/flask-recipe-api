@@ -1,0 +1,363 @@
+/* Credit: Adapted from https://codepen.io/UliTroyo/pen/MWpPrdQ */
+
+/* TODO: Not mobile-friendly yet */
+
+* {
+	box-sizing: border-box;
+	padding: 0;
+}
+:root {
+	--ink-color: hsl(42, 14%, 13%);
+	--paper-color: hsl(348, 9%, 85%);
+	--header-font: "Playfair Display", serif;
+	--body-font: "Crimson Text", serif;
+	--paper-texture: url("https://res.cloudinary.com/ulitroyo/image/upload/v1623943609/paper-seamless.webp");
+	--wood-texture: url("https://res.cloudinary.com/ulitroyo/image/upload/v1623943372/wood-seamless.webp");
+}
+.recipe-main {
+	/* 	background-color: hsl(24,32%,39%); */
+	background-image: var(--wood-texture);
+	background-size: 300px;
+	display: grid;
+	justify-content: center;
+	padding: 3vmin;
+}
+.recipe-container {
+	background-blend-mode: color;
+	background-image: linear-gradient(snow, snow), var(--paper-texture);
+	background-size: 375px;
+	color: var(--ink-color);
+	display: grid;
+	filter: drop-shadow(4px 12px 10px hsl(20, 50%, 10%));
+	font-family: var(--body-font);
+	font-size: calc(1.2rem + 1.1vmin);
+	justify-items: center;
+	line-height: 1.2;
+	max-width: 60ch;
+	padding: 5vmin;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	font-family: var(--header-font);
+	font-weight: 700;
+	font-style: normal;
+	line-height: 1.1;
+	text-align: center;
+	width: 100%;
+}
+h1 {
+	font-size: 2.5em;
+	max-width: 650px;
+}
+h2 {
+	font-size: 2em;
+}
+h3 {
+	font-size: 1.5em;
+}
+figure {
+	display: grid;
+	justify-items: center;
+	margin: 0;
+}
+figcaption {
+	background-color: var(--ink-color);
+	color: var(--paper-color);
+	font-size: 0.8em;
+	padding: 0.5em 1em;
+	text-align: center;
+	transform: translateY(-20%);
+}
+img {
+	max-width: 100%;
+	width: 100%;
+}
+
+ol > li {
+	font-family: var(--body-text);
+}
+.recipe_details {
+	width: 100%;
+}
+
+/*--------------------------------------*/
+/*           GRID AFTER 800px           */
+/*--------------------------------------*/
+
+@media screen and (min-width: 800px) {
+	* {
+		/* 		border: 1px dashed magenta; */
+	}
+	.recipe-main {
+		background-image: initial;
+		background-size: initial;
+		display: initial;
+		padding: 0;
+	}
+	.recipe-container {
+		background-blend-mode: initial;
+		background-color: hsl(24, 32%, 39%);
+		background-image: var(--wood-texture);
+		background-size: 600px;
+		border: none;
+		display: grid;
+		font-size: clamp(1.3rem, 2.5vw, 1.5rem);
+		grid-template-columns:
+			1fr [left-card-start] minmax(5vw, 10vw) [right-card-start] minmax(
+				50vw,
+				800px
+			)
+			[left-card-end] minmax(5vw, 10vw) [right-card-end] 1fr;
+
+		/******* 	WORKING ON THIS PRESENTLY	 *******/
+		grid-template-rows: [top-card-start] auto [recipe-start] auto [top-card-end] 2rem [middle-card-start] auto [heading-start] auto [ingredients-start] auto [variation-start] auto [middle-card-end] 2rem [bottom-card-start] auto [instructions-start] auto [bottom-card-end];
+		justify-content: stretch;
+		/******* 	WORKING ON THIS PRESENTLY	 *******/
+
+		max-width: 100%;
+		padding: 3vw;
+		width: 100%;
+	}
+	.recipe-container > * {
+		background-blend-mode: color;
+		background-image: linear-gradient(snow, snow), var(--paper-texture);
+		background-size: 375px;
+		margin-top: 0;
+	}
+	/*-----  TOP CARD START	 -----*/
+	.recipe-container > figure:first-of-type {
+		display: grid;
+		justify-self: left;
+		grid-column: left-card-start / left-card-end;
+		grid-row: top-card-start / top-card-end;
+		position: relative;
+		width: 100%;
+	}
+	.recipe-container > figure:first-of-type > figcaption {
+		border: 1px solid var(--paper-color);
+		bottom: 2em;
+		justify-self: left;
+		left: 25%;
+		position: absolute;
+		transform: translateX(-50%);
+		width: 25ch;
+	}
+	.recipe-container > figure:first-of-type > img {
+		justify-self: left;
+		width: 50%;
+	}
+	.recipe-container > h1 {
+		background-blend-mode: initial;
+		background-image: initial;
+		background-size: initial;
+		grid-column: left-card-start / left-card-end;
+		grid-row: top-card-start / top-card-end;
+		justify-self: right;
+		max-width: 50%;
+		padding: clamp(1rem, 3vw, 2rem);
+		padding-top: 2em;
+		width: 50%;
+		z-index: 2;
+	}
+	.recipe-container > .recipe_details {
+		background-blend-mode: initial;
+		background-image: initial;
+		background-size: initial;
+		font-size: clamp(1.3rem, 2.5vw, 2rem);
+		grid-column: left-card-start / left-card-end;
+		grid-row: recipe-start / top-card-end;
+		justify-self: right;
+		margin-top: 0px;
+		width: 50%;
+		z-index: 3;
+	}
+	.recipe_details > ul {
+		border: 1px solid var(--ink-color);
+		margin: 1em;
+		padding: 0;
+	}
+	.recipe_details > ul > li {
+		list-style: none;
+		padding: 3px 1em;
+	}
+	.recipe_details > ul > li + li {
+		border-top: 2px dotted var(--ink-color);
+	}
+	/*-----  TOP CARD END	 -----*/
+
+	/*-----  MIDDLE CARD START	 -----*/
+	.recipe-container > .description {
+		align-items: start;
+		display: grid;
+		grid-column: right-card-start / right-card-end;
+		grid-row: middle-card-start / heading-start;
+		grid-template: auto auto / 1fr 1fr;
+		grid-template-areas:
+			"p1 fig"
+			"p2 fig";
+		width: 100%;
+	}
+	.recipe-container > .description:after {
+		background-color: var(--ink-color);
+		content: " ";
+		display: block;
+		grid-column: 1 / -1;
+		height: 1px;
+		justify-self: center;
+		margin-top: 1em;
+		width: 85%;
+	}
+	.description > p {
+		font-size: 1.2em;
+	}
+	.description > p:first-of-type {
+		grid-area: p1;
+		padding-left: 1.5em;
+		margin-bottom: 0px;
+		margin-top: 1.5em;
+	}
+	.description > p + p {
+		grid-area: p2;
+		padding-left: 1.5em;
+	}
+	.description > figure {
+		grid-area: fig;
+		padding: 1.5em 1.5em 0 0.5em;
+	}
+	.description > figure > img {
+		filter: drop-shadow(3px 3px 5px rgba(15, 10, 10, 0.2));
+	}
+	.recipe-container > h2:first-of-type {
+		grid-column: right-card-start / right-card-end;
+		grid-row: heading-start / ingredients-start;
+		height: 100%;
+		padding-top: 1em;
+		width: 100%;
+	}
+	.recipe-container > .ingredients {
+		display: grid;
+		grid-column: right-card-start / right-card-end;
+		grid-row: ingredients-start / variation-start;
+		height: 100%;
+		justify-content: center;
+		padding: 0 1em 2em;
+		width: 100%;
+	}
+	.recipe-container > .ingredients > li {
+		list-style-type: none;
+		padding: 5px 1em;
+		max-width: 54ch;
+		text-align: left;
+	}
+	.recipe-container > .ingredients > li > .ingredient-name {
+		text-transform: capitalize;
+	}
+	.recipe-container > .ingredients > li:first-of-type {
+		border: 1px solid var(--ink-color);
+		border-bottom: 1px dotted var(--ink-color);
+	}
+	.recipe-container > .ingredients > li + li {
+		border-bottom: 1px dotted var(--ink-color);
+		border-left: 1px solid var(--ink-color);
+		border-right: 1px solid var(--ink-color);
+	}
+	.recipe-container > .ingredients > li:last-of-type {
+		border-bottom: 1px solid var(--ink-color);
+	}
+	.recipe-container > .variation {
+		background-image: initial;
+		background-color: var(--ink-color);
+		color: var(--paper-color);
+		grid-column: right-card-start / right-card-end;
+		grid-row: variation-start / middle-card-end;
+		padding: 2rem calc(50% - 18ch);
+		position: relative;
+		text-align: center;
+		width: 100%;
+	}
+	.recipe-container > .variation:before {
+		border-left: 1px dotted var(--paper-color);
+		border-right: 1px dotted var(--paper-color);
+		opacity: 0.6;
+		content: " ";
+		display: block;
+		height: calc(100% - 12px);
+		left: 10%;
+		margin: 5px;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		width: calc(80% - 12px);
+	}
+	.recipe-container > .variation:after {
+		display: block;
+		border: 1px solid var(--paper-color);
+		content: " ";
+		height: calc(100% - 12px);
+		left: 0;
+		margin: 5px;
+		opacity: 0.6;
+		pointer-events: none;
+		position: absolute;
+		top: 0;
+		width: calc(100% - 12px);
+	}
+	/*-----  MIDDLE CARD END	 -----*/
+
+	/*-----  BOTTOM CARD START	 -----*/
+	.recipe-container > h2:nth-of-type(2) {
+		grid-column: left-card-start / left-card-end;
+		grid-row: bottom-card-start / instructions-start;
+		height: 100%;
+		padding-top: 1em;
+		width: 100%;
+	}
+	.recipe-container > .instructions {
+		display: grid;
+		grid-column: left-card-start / left-card-end;
+		grid-row: instructions-start / bottom-card-end;
+		justify-content: center;
+		height: 100%;
+		list-style-position: inside;
+		padding-left: 0;
+		padding-bottom: 4em;
+		position: relative;
+		width: 100%;
+	}
+	.instructions li {
+		max-width: 66ch;
+		padding: 0.5rem 1rem;
+	}
+	.instructions li:first-of-type {
+		border: 1px solid var(--ink-color);
+		border-bottom: 1px dotted var(--ink-color);
+	}
+	.instructions li + li {
+		border-bottom: 1px dotted var(--ink-color);
+		border-left: 1px solid var(--ink-color);
+		border-right: 1px solid var(--ink-color);
+	}
+	.instructions li:last-of-type {
+		border-bottom: 1px solid var(--ink-color);
+	}
+	.instructions > li > ul {
+		margin: 0.5em 1em;
+		padding: 0;
+		padding-left: 0;
+		width: calc(100% - 2em);
+	}
+	.recipe-container > .instructions:after {
+		background: var(--ink-color);
+		bottom: 0;
+		content: " ";
+		display: block;
+		height: 1em;
+		position: absolute;
+		width: 100%;
+	}
+	/*-----  BOTTOM CARD END	 -----*/
+}

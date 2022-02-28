@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import uuid from 'react-uuid';
 
+import "./SingleRecipe.css";
+
 const SingleRecipe = () => {
   const { id } = useParams();
   const [recipe, setRecipe] = useState([]);
@@ -19,53 +21,77 @@ const SingleRecipe = () => {
   }, []);
 
   return (
-    <section className='recipe-container'>
-      <h1>
-        {recipe.recipe_name}
-      </h1>
-      <h3>
-        {recipe.description}
-      </h3>
-      <ul>
+    // Credit: Adapted from https://codepen.io/UliTroyo/pen/MWpPrdQ
+    <main className='recipe-main'>
+      <section className='recipe-container'>
+        <h1>{recipe.recipe_name}</h1>
+        <figure>
+          <img src="https://assets.codepen.io/652/shania-pinnata-7E-vKgzahd8-unsplash.jpg" alt="spaghetti with pesto sauce and cherry tomatoes." />
+          {/* full size image URL: https://images.unsplash.com/photo-1593253787226-567eda4ad32d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2434&q=80 */}
+
+          {/* TODO: Should be able to get creator name from
+          get_recipe_by_id() endpoint to display here. */}
+          <figcaption>Recipe by {recipe.creator}</figcaption>
+        </figure>
+
+        <div className="description">
+          <p>{recipe.description}</p>
+          <figure>
+            <img src="https://assets.codepen.io/652/tamanna-rumee-nswz6tIpgZk-unsplash.jpg" alt="tomato halves surrounded by basil leaves and peppercorns." />
+            {/* full size image URL: https://images.unsplash.com/photo-1606923829579-0cb981a83e2e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80 */}
+
+            {/* <figcaption>Recipe by {recipe.creator}</figcaption> */}
+          </figure>
+        </div>
+
+        <div className="recipe_details">
+          <ul>
+            <li>Servings: 4</li>
+            <li>Prep Time: 5 minutes</li>
+            <li>Cook Time: 25 minutes</li>
+            <li>Total Time: 30 minutes</li>
+          </ul>
+        </div>
+        <h2>The Ingredients</h2>
+        <ul className="ingredients">
         {ingredients.map(ingredient => {
-          let key_id = uuid();
-          return (
-            <React.Fragment key={key_id}>
-              <li key={ingredient.name + key_id}>
-                {ingredient.name}
-              </li>
-              <li key={ingredient.quantity + key_id}>
-                {ingredient.quantity}
-              </li>
-              <li key={ingredient.unit + key_id}>
-                {ingredient.unit}
-              </li>
-            </React.Fragment>
-          )
-        })}
-        {/* Beans on Toast
-        A British staple, on standby for breakfast, lunch, or dinner!
-        Empty beans into pot, add tomato puree, cook for 3-5 mins. 
-        Put both slices of bread into the toaster and pop down.
-        Once toasted, remove bread from toaster and spread with marmite.
-        Turn off hob and poured beans lavishly over your toast. */}
-        {method.map(step => {
-          let key_id = uuid();
-          return (
-            <React.Fragment key={key_id}>
-              <li key={step.step_no + key_id}>
-                <span>
-                  {step.step_no}
-                </span>
-                <span>
-                  {step.step}
-                </span>
-              </li>
-            </React.Fragment>
-          )
-        })}
-      </ul>
-    </section>
+            let key_id = uuid();
+            return (
+              <React.Fragment key={key_id}>
+                <li key={ingredient.name + key_id}>
+                  <span className='ingredient-name'>
+                    {ingredient.name}:&nbsp;
+                  </span>
+                  <span>
+                    {ingredient.quantity}&nbsp;
+                  </span>
+                  <span>
+                    {ingredient.unit}
+                  </span>
+                </li>
+              </React.Fragment>
+            )
+          })}
+        </ul>
+
+        {/* <p className="variation">Variation: Got no time, or no fresh basil? Use a 6 ounce jar of prepared pesto instead.</p> */}
+
+        <h2>The Process</h2>
+        <ol className="instructions">
+          {method.map(step => {
+              return (
+                <React.Fragment key={uuid()}>
+                  <li key={step.step_no}>
+                    <span>
+                      {step.step}
+                    </span>
+                  </li>
+                </React.Fragment>
+              )
+            })}
+        </ol>
+      </section>
+    </main>
   )
 }
 

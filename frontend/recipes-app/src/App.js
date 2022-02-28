@@ -45,48 +45,50 @@ function App() {
           ) : (
             <Navbar toggle={toggle} token={token} />
         )}
-        <Routes>
-          <Route
-            path="/"
-            element={<HomePage recipes={recipes} />}
-          ></Route>
-          <Route
-            path="/sign-in"
-            element={
-              <PublicRoute>
-                <Login setToken={setToken} setRefreshToken={setRefreshToken} />
-              </PublicRoute>
-            }
-          ></Route>
-          <Route
-            path="/sign-up"
-            element={
-              <PublicRoute>
-                <Signup setToken={setToken} setRefreshToken={setRefreshToken} />
-              </PublicRoute>
-            }
-          ></Route>
-          <Route
-            path="/create"
-            element={
-              <PrivateRoute>
-                <RecipeForm />
-              </PrivateRoute>
-            }
-          ></Route>
-          <Route
-            path="recipes/:id"
-            element={
-              <PrivateRoute>
-                <SingleRecipe />
-              </PrivateRoute>
-            }
-          ></Route>
-          <Route
-            path="/recipes"
-            element={<Recipes recipes={recipes} />}
-          ></Route>
-        </Routes>
+        <main style={{paddingTop: "80px"}}>
+          <Routes>
+            <Route
+              path="/"
+              element={<HomePage recipes={recipes} />}
+            ></Route>
+            <Route
+              path="/sign-in"
+              element={
+                <PublicRoute>
+                  <Login setToken={setToken} setRefreshToken={setRefreshToken} />
+                </PublicRoute>
+              }
+            ></Route>
+            <Route
+              path="/sign-up"
+              element={
+                <PublicRoute>
+                  <Signup setToken={setToken} setRefreshToken={setRefreshToken} />
+                </PublicRoute>
+              }
+            ></Route>
+            <Route
+              path="/create"
+              element={
+                <PrivateRoute>
+                  <RecipeForm />
+                </PrivateRoute>
+              }
+            ></Route>
+            <Route
+              path="recipes/:id"
+              element={
+                <PrivateRoute>
+                  <SingleRecipe />
+                </PrivateRoute>
+              }
+            ></Route>
+            <Route
+              path="/recipes"
+              element={<Recipes recipes={recipes} />}
+            ></Route>
+          </Routes>
+        </main>
       </div>
     </Router>
   );
