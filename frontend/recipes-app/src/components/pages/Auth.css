@@ -13,6 +13,7 @@
     border: none;
     padding: .3em .8em;
     border: 3px solid #fff;
+    cursor: pointer;
 }
 
 .logout-btn:hover,
@@ -23,6 +24,7 @@
 }
 
 .form-actions > button {
+    cursor: pointer;
     background: #486582;
     color: #fff;
     font-size: 1.2em;

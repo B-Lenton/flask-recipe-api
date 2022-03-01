@@ -26,19 +26,16 @@ const SingleRecipe = () => {
       <section className='recipe-container'>
         <h1>{recipe.recipe_name}</h1>
         <figure>
-          <img src="https://assets.codepen.io/652/shania-pinnata-7E-vKgzahd8-unsplash.jpg" alt="spaghetti with pesto sauce and cherry tomatoes." />
-          {/* full size image URL: https://images.unsplash.com/photo-1593253787226-567eda4ad32d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2434&q=80 */}
+          <img src="https://images.unsplash.com/photo-1593253787226-567eda4ad32d?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=2434&q=80" alt="spaghetti with pesto sauce and cherry tomatoes." />
 
-          {/* TODO: Should be able to get creator name from
-          get_recipe_by_id() endpoint to display here. */}
-          <figcaption>Recipe by {recipe.creator}</figcaption>
+          {/* Make below a clickable link to user profile (endpoint exists) */}
+          <figcaption>Recipe by {recipe.name}</figcaption>
         </figure>
 
         <div className="description">
           <p>{recipe.description}</p>
           <figure>
-            <img src="https://assets.codepen.io/652/tamanna-rumee-nswz6tIpgZk-unsplash.jpg" alt="tomato halves surrounded by basil leaves and peppercorns." />
-            {/* full size image URL: https://images.unsplash.com/photo-1606923829579-0cb981a83e2e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80 */}
+            <img src="https://images.unsplash.com/photo-1606923829579-0cb981a83e2e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="tomato halves surrounded by basil leaves and peppercorns." />
 
             {/* <figcaption>Recipe by {recipe.creator}</figcaption> */}
           </figure>

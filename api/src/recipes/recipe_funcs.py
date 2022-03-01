@@ -5,7 +5,7 @@ from flask_jwt_extended import get_jwt_identity
 
 from db_connection import connect_to_db
 
-# TODO: Add option to upload image to db...
+# TODO: Add option to upload image to db (below) AND add servings, prep and cook time
 # https://pynative.com/python-sqlite-blob-insert-and-retrieve-digital-data/
 def create_recipe(recipe):
     """
@@ -128,6 +128,13 @@ def get_recipe_by_id(recipe_id):
 
         if recipe is None:
             recipe = { "message": "recipe does not exist" }
+
+        cur.execute(
+            "SELECT name from users WHERE user_id = ?",
+            (recipe["creator"],)
+        )
+
+        creator_name = cur.fetchone()
         
         cur.execute(
             """
@@ -164,8 +171,14 @@ def get_recipe_by_id(recipe_id):
         recipe = {}
         ingredients = []
         method = []
+        creator_name = ""
 
-    return { **recipe, "ingredients": ingredients, "method": method }
+    return { 
+        **recipe, 
+        "ingredients": ingredients, 
+        "method": method,
+        **creator_name 
+    }
 
 
 def update_recipe(recipe, recipe_id):
