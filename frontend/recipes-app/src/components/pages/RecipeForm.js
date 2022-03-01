@@ -177,7 +177,7 @@ function RecipeForm() {
 
                 <label htmlFor="ingredients">Ingredients</label>
                 {ingredientList.map((singleIngredient, index) => (
-                    <div key={index} className="ingredients">
+                    <div key={index} className="ingredients-list">
                         <div className="first-division">
                             <input
                                 type="text"

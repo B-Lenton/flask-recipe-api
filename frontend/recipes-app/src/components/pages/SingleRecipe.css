@@ -1,40 +1,34 @@
 /* Credit: Adapted from https://codepen.io/UliTroyo/pen/MWpPrdQ */
 
-/* TODO: Not mobile-friendly yet */
-
 * {
 	box-sizing: border-box;
 	padding: 0;
 }
 :root {
-	--ink-color: hsl(42, 14%, 13%);
-	--paper-color: hsl(348, 9%, 85%);
-	--header-font: "Playfair Display", serif;
-	--body-font: "Crimson Text", serif;
-	--paper-texture: url("https://res.cloudinary.com/ulitroyo/image/upload/v1623943609/paper-seamless.webp");
-	--wood-texture: url("https://res.cloudinary.com/ulitroyo/image/upload/v1623943372/wood-seamless.webp");
+	--ink: hsl(42, 14%, 13%);
+	--paper-color: rgb(247, 243, 241);
+	--paper: url("../../images/paper-texture.jpg");
 }
 .recipe-main {
-	/* 	background-color: hsl(24,32%,39%); */
-	background-image: var(--wood-texture);
-	background-size: 300px;
+	/* background-size: 300px; */
 	display: grid;
 	justify-content: center;
 	padding: 3vmin;
 }
 .recipe-container {
+	background-color: #fff;
 	background-blend-mode: color;
-	background-image: linear-gradient(snow, snow), var(--paper-texture);
+	background-image: var(--paper);
 	background-size: 375px;
-	color: var(--ink-color);
+	color: var(--ink);
 	display: grid;
 	filter: drop-shadow(4px 12px 10px hsl(20, 50%, 10%));
-	font-family: var(--body-font);
 	font-size: calc(1.2rem + 1.1vmin);
 	justify-items: center;
 	line-height: 1.2;
 	max-width: 60ch;
 	padding: 5vmin;
+	border: 3px solid #486582;
 }
 h1,
 h2,
@@ -42,7 +36,6 @@ h3,
 h4,
 h5,
 h6 {
-	font-family: var(--header-font);
 	font-weight: 700;
 	font-style: normal;
 	line-height: 1.1;
@@ -65,7 +58,7 @@ figure {
 	margin: 0;
 }
 figcaption {
-	background-color: var(--ink-color);
+	background-color: var(--ink);
 	color: var(--paper-color);
 	font-size: 0.8em;
 	padding: 0.5em 1em;
@@ -76,12 +69,11 @@ img {
 	max-width: 100%;
 	width: 100%;
 }
-
-ol > li {
-	font-family: var(--body-text);
-}
 .recipe_details {
 	width: 100%;
+}
+.recipe-container > .ingredients > li > .ingredient-name {
+	text-transform: capitalize;
 }
 
 /*--------------------------------------*/
@@ -99,10 +91,8 @@ ol > li {
 		padding: 0;
 	}
 	.recipe-container {
-		background-blend-mode: initial;
-		background-color: hsl(24, 32%, 39%);
-		background-image: var(--wood-texture);
-		background-size: 600px;
+		/* background-blend-mode: initial; */
+		/* background-size: 600px; */
 		border: none;
 		display: grid;
 		font-size: clamp(1.3rem, 2.5vw, 1.5rem);
@@ -124,9 +114,11 @@ ol > li {
 	}
 	.recipe-container > * {
 		background-blend-mode: color;
-		background-image: linear-gradient(snow, snow), var(--paper-texture);
+		background-image: var(--paper);
 		background-size: 375px;
 		margin-top: 0;
+		box-shadow: 10px 10px 5px rgba(72, 101, 130, 0.5);
+		border: 3px solid #486582;
 	}
 	/*-----  TOP CARD START	 -----*/
 	.recipe-container > figure:first-of-type {
@@ -162,6 +154,8 @@ ol > li {
 		padding-top: 2em;
 		width: 50%;
 		z-index: 2;
+		box-shadow: none;
+		border: none;
 	}
 	.recipe-container > .recipe_details {
 		background-blend-mode: initial;
@@ -174,9 +168,11 @@ ol > li {
 		margin-top: 0px;
 		width: 50%;
 		z-index: 3;
+		box-shadow: none;
+		border: none;
 	}
 	.recipe_details > ul {
-		border: 1px solid var(--ink-color);
+		border: 1px solid var(--ink);
 		margin: 1em;
 		padding: 0;
 	}
@@ -185,7 +181,7 @@ ol > li {
 		padding: 3px 1em;
 	}
 	.recipe_details > ul > li + li {
-		border-top: 2px dotted var(--ink-color);
+		border-top: 2px dotted var(--ink);
 	}
 	/*-----  TOP CARD END	 -----*/
 
@@ -200,9 +196,10 @@ ol > li {
 			"p1 fig"
 			"p2 fig";
 		width: 100%;
+		border-bottom: none;
 	}
 	.recipe-container > .description:after {
-		background-color: var(--ink-color);
+		background-color: var(--ink);
 		content: " ";
 		display: block;
 		grid-column: 1 / -1;
@@ -237,6 +234,8 @@ ol > li {
 		height: 100%;
 		padding-top: 1em;
 		width: 100%;
+		border-bottom: none;
+		border-top: none;
 	}
 	.recipe-container > .ingredients {
 		display: grid;
@@ -246,6 +245,7 @@ ol > li {
 		justify-content: center;
 		padding: 0 1em 2em;
 		width: 100%;
+		border-top: none;
 	}
 	.recipe-container > .ingredients > li {
 		list-style-type: none;
@@ -253,24 +253,21 @@ ol > li {
 		max-width: 54ch;
 		text-align: left;
 	}
-	.recipe-container > .ingredients > li > .ingredient-name {
-		text-transform: capitalize;
-	}
 	.recipe-container > .ingredients > li:first-of-type {
-		border: 1px solid var(--ink-color);
-		border-bottom: 1px dotted var(--ink-color);
+		border: 1px solid var(--ink);
+		border-bottom: 1px dotted var(--ink);
 	}
 	.recipe-container > .ingredients > li + li {
-		border-bottom: 1px dotted var(--ink-color);
-		border-left: 1px solid var(--ink-color);
-		border-right: 1px solid var(--ink-color);
+		border-bottom: 1px dotted var(--ink);
+		border-left: 1px solid var(--ink);
+		border-right: 1px solid var(--ink);
 	}
 	.recipe-container > .ingredients > li:last-of-type {
-		border-bottom: 1px solid var(--ink-color);
+		border-bottom: 1px solid var(--ink);
 	}
 	.recipe-container > .variation {
 		background-image: initial;
-		background-color: var(--ink-color);
+		background-color: var(--ink);
 		color: var(--paper-color);
 		grid-column: right-card-start / right-card-end;
 		grid-row: variation-start / middle-card-end;
@@ -315,6 +312,7 @@ ol > li {
 		height: 100%;
 		padding-top: 1em;
 		width: 100%;
+		border-bottom: none;
 	}
 	.recipe-container > .instructions {
 		display: grid;
@@ -327,22 +325,23 @@ ol > li {
 		padding-bottom: 4em;
 		position: relative;
 		width: 100%;
+		border-top: none;
 	}
 	.instructions li {
 		max-width: 66ch;
 		padding: 0.5rem 1rem;
 	}
 	.instructions li:first-of-type {
-		border: 1px solid var(--ink-color);
-		border-bottom: 1px dotted var(--ink-color);
+		border: 1px solid var(--ink);
+		border-bottom: 1px dotted var(--ink);
 	}
 	.instructions li + li {
-		border-bottom: 1px dotted var(--ink-color);
-		border-left: 1px solid var(--ink-color);
-		border-right: 1px solid var(--ink-color);
+		border-bottom: 1px dotted var(--ink);
+		border-left: 1px solid var(--ink);
+		border-right: 1px solid var(--ink);
 	}
 	.instructions li:last-of-type {
-		border-bottom: 1px solid var(--ink-color);
+		border-bottom: 1px solid var(--ink);
 	}
 	.instructions > li > ul {
 		margin: 0.5em 1em;
@@ -350,14 +349,4 @@ ol > li {
 		padding-left: 0;
 		width: calc(100% - 2em);
 	}
-	.recipe-container > .instructions:after {
-		background: var(--ink-color);
-		bottom: 0;
-		content: " ";
-		display: block;
-		height: 1em;
-		position: absolute;
-		width: 100%;
-	}
-	/*-----  BOTTOM CARD END	 -----*/
 }
